@@ -29,7 +29,7 @@ try {
 		throw new Error('Config file could not be read.');
 	}
 
-	const content = Deno.readFileSync(CONFIG_PATH);
+	const content = Deno.readFileSync(CONFIG_PATH).toString();
 
 	console.log(content);
 } catch {
