@@ -9,7 +9,7 @@ class Logger {
 	}
 
 	private write(...data: string[]) {
-		if (this.append) this.logFn(this.append, ...data);
+		if (this.append.length > 0) this.logFn(this.append, ...data);
 		else this.logFn(...data);
 	}
 
@@ -28,7 +28,7 @@ class Logger {
 	indent() {
 		const indentedLogger = new Logger();
 
-		indentedLogger.append = '> ';
+		indentedLogger.append = '	';
 
 		return indentedLogger;
 	}
