@@ -9,7 +9,8 @@ class Logger {
 	}
 
 	private write(...data: string[]) {
-		this.logFn(this.append, ...data);
+		if (this.append) this.logFn(this.append, ...data);
+		else this.logFn(...data);
 	}
 
 	log(...text: string[]) {
