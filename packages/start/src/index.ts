@@ -20,7 +20,7 @@ const logger = new Logger();
 
 logger.warn('Preparing for start...');
 
-logger.indent().log('Getting cached config file...');
+logger.indent().log(`Getting cached config file from ${CONFIG_PATH}...`);
 
 try {
 	const file = await Deno.open(CONFIG_PATH);
