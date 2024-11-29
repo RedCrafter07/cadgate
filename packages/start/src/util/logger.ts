@@ -1,5 +1,7 @@
 import chalk from 'chalk';
 
+type ErrorLevel = 'CRITICAL' | 'ERROR' | 'WARN';
+
 class Logger {
 	logFn = console.log;
 	append = '';
@@ -8,7 +10,7 @@ class Logger {
 		if (logFn) this.logFn = logFn;
 	}
 
-	private write(...data: string[]) {
+	private write(...data: any[]) {
 		if (this.append.length > 0) this.logFn(this.append, ...data);
 		else this.logFn(...data);
 	}
@@ -23,6 +25,10 @@ class Logger {
 
 	success(...text: string[]) {
 		this.write(chalk.green(...text));
+	}
+
+	error(level: ErrorLevel, ...data: any[]) {
+		this.write(chalk.red(`[${level}]:`, ...data));
 	}
 
 	indent() {

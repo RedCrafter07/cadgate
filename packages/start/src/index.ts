@@ -1,6 +1,5 @@
 import chalk from 'chalk';
 import { Logger } from './util/logger.ts';
-import readFile from './util/readFile.ts';
 
 const CONFIG_PATH = Deno.env.get('CONFIG_PATH');
 
@@ -25,9 +24,14 @@ logger.indent().log(`Getting cached config file from ${CONFIG_PATH}...`);
 try {
 	const file = await Deno.open(CONFIG_PATH);
 
-	const content = await readFile(file);
+	if (!file.readable) {
+		logger.error('CRITICAL', 'Cannot read config file');
+		throw new Error('Config file could not be read.');
+	}
+
+	const content = Deno.readFileSync(CONFIG_PATH);
 
 	console.log(content);
 } catch {
-	console.log(chalk.yellow('[WARNING]: Config file not found.'));
+	logger.warn('[WARNING]: Config file not found.');
 }
