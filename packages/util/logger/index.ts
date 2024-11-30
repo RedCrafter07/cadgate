@@ -5,6 +5,7 @@ type ErrorLevel = 'CRITICAL' | 'ERROR' | 'WARN';
 class Logger {
 	logFn = console.log;
 	append = '';
+	prefixes = true;
 
 	constructor(logFn?: (...data: any[]) => void) {
 		if (logFn) this.logFn = logFn;
@@ -20,11 +21,13 @@ class Logger {
 	}
 
 	info(...data: any[]) {
-		this.write(chalk.blueBright('[INFO]:', ...data));
+		if (!this.prefixes) this.write(chalk.blueBright(...data));
+		else this.write(chalk.blueBright('[INFO]:', ...data));
 	}
 
 	warn(...text: string[]) {
-		this.write(chalk.yellow('[WARNING]:', ...text));
+		if (!this.prefixes) this.write(chalk.yellow(...text));
+		else this.write(chalk.yellow('[WARNING]:', ...text));
 	}
 
 	success(...text: string[]) {
@@ -32,13 +35,16 @@ class Logger {
 	}
 
 	error(level: ErrorLevel, ...data: any[]) {
+		if (level === 'CRITICAL')
+			this.write(chalk.bgRed.gray(`[${level}]:`, ...data));
 		this.write(chalk.red(`[${level}]:`, ...data));
 	}
 
 	indent() {
 		const indentedLogger = new Logger();
 
-		indentedLogger.append = '	';
+		indentedLogger.append = chalk.bgWhite.white('>');
+		indentedLogger.prefixes = false;
 
 		return indentedLogger;
 	}
