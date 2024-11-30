@@ -1,24 +1,23 @@
-import { z } from 'zod';
+import { z } from 'npm:zod';
+import { dbSchema } from '../../../../util/db/schemas/db.ts';
 
 const configSchema = z.object({
-	version: z.number().default(1),
+	version: z.number().default(0.1).describe('Config version for migration'),
 
-	isSetUp: z.boolean().default(false),
+	isSetUp: z
+		.boolean()
+		.default(false)
+		.describe('If this is false, the setup will run again.'),
 
-	usesSqlite: z.boolean().default(false),
+	// usesSqlite: z
+	// 	.boolean()
+	// 	.optional()
+	// 	.default(false)
+	// 	.describe(
+	// 		'Since sqlite is not implemented, this is false by default. A future implementation will come.',
+	// 	),
 
-	proxyEntries: z
-		.object({
-			hosts: z
-				.string()
-				.array()
-				.min(1)
-				.describe('The hosts that are proxied to the "To" entry'),
-			to: z.string().describe('The location the hosts are proxied to.'),
-			enforceHttps: z.boolean().default(false),
-			cloudflare: z.boolean().default(false),
-		})
-		.array(),
+	proxyEntries: dbSchema.shape.proxyEntries,
 });
 
 export default configSchema;

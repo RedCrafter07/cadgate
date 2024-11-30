@@ -1,4 +1,4 @@
-import chalk from 'chalk';
+import chalk from 'npm:chalk';
 
 type ErrorLevel = 'CRITICAL' | 'ERROR' | 'WARN';
 
@@ -20,7 +20,7 @@ class Logger {
 	}
 
 	warn(...text: string[]) {
-		this.write(chalk.yellow(...text));
+		this.write(chalk.yellow('[WARNING]:', ...text));
 	}
 
 	success(...text: string[]) {
