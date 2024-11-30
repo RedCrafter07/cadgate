@@ -1,11 +1,13 @@
 {
 	"tasks": {
 		"dev": "deno run --watch main.ts",
-		"build": "deno compile --output interface -A src/index.ts"
+		"build": "deno compile --output start -A src/index.ts",
+		"start": "deno run --env-file=.env -A src/index.ts"
 	},
 	"imports": {
 		"@std/assert": "jsr:@std/assert@1",
 		"@std/yaml": "jsr:@std/yaml@1",
+		"@std/encoding": "jsr:@std/encoding@1",
 		"@/": "../"
 	}
 }
