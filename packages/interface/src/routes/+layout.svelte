@@ -1,6 +1,9 @@
 <script lang="ts">
 	import '../app.css';
+	import "@fontsource-variable/dm-sans"
 	let { children } = $props();
 </script>
 
-{@render children()}
+<div class="w-full min-h-screen">
+	{@render children()}
+</div>
