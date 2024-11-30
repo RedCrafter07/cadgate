@@ -7,7 +7,7 @@ import { Paths, PathValue } from './types/path.ts';
 class Database<S extends ZodObject<any>> {
 	private dbPath: string;
 	private db: JsonDB;
-	protected schema: S;
+	private schema: S;
 
 	constructor(dbPath: string, schema: S) {
 		this.dbPath = dbPath;
@@ -25,10 +25,6 @@ class Database<S extends ZodObject<any>> {
 	async validate() {
 		const data = await this.db.getData('.');
 		return this.schema.safeParse(data);
-	}
-
-	setSchema(schema: S) {
-		this.schema = schema;
 	}
 
 	async push<P extends Paths<z.infer<S>>>(

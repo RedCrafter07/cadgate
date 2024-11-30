@@ -15,8 +15,8 @@ class Logger {
 		else this.logFn(...data);
 	}
 
-	log(...text: string[]) {
-		this.write(chalk.white(...text));
+	log(...data: any[]) {
+		this.write(chalk.white(...data));
 	}
 
 	warn(...text: string[]) {
