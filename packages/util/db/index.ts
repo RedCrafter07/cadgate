@@ -5,9 +5,9 @@ import { Paths, PathValue } from './types/path.ts';
 
 // deno-lint-ignore no-explicit-any
 class Database<S extends ZodObject<any>> {
-	dbPath: string;
-	db: JsonDB;
-	schema: S;
+	private dbPath: string;
+	private db: JsonDB;
+	protected schema: S;
 
 	constructor(dbPath: string, schema: S) {
 		this.dbPath = dbPath;
@@ -68,4 +68,5 @@ class Database<S extends ZodObject<any>> {
 		return currentSchema;
 	}
 }
-export default Database;
+
+export { Database };
