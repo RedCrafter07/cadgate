@@ -1,0 +1,21 @@
+{
+  "version": "4",
+  "specifiers": {
+    "npm:node-json-db@*": "2.3.0",
+    "npm:zod@*": "3.23.8"
+  },
+  "npm": {
+    "node-json-db@2.3.0": {
+      "integrity": "sha512-B8T+w4q6zXZ20YcfQINLSjMGgImRKzkvR0ShYYoNRdLxtMhVvbzaMBzNdEaRcCjilW/lKS+g9CwVXNoK5uTncw==",
+      "dependencies": [
+        "rwlock"
+      ]
+    },
+    "rwlock@5.0.0": {
+      "integrity": "sha512-XgzRqLMfCcm9QfZuPav9cV3Xin5TRcIlp4X/SH3CvB+x5D2AakdlEepfJKDd8ByncvfpcxNWdRZVUl38PS6ZJg=="
+    },
+    "zod@3.23.8": {
+      "integrity": "sha512-XBx9AXhXktjUqnepgTiE5flcKIYWi/rme0Eaj+5Y0lftuGBq+jyRu/md4WnuxqgP1ubdpNCsYEYPxrzVHD8d6g=="
+    }
+  }
+}

@@ -14,7 +14,7 @@ COPY packages/start .
 
 RUN deno install
 
-RUN deno build
+RUN deno run build
 
 FROM deno as interface
 
