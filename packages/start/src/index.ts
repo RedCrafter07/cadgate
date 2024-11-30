@@ -7,7 +7,7 @@ import { encodeHex } from '@std/encoding/hex';
 
 const logger = new Logger();
 
-logger.log('======= Welcome to cadpm! =======');
+logger.log('======= Welcome to cadgate! =======');
 
 const CONFIG_PATH = Deno.env.get('CONFIG_PATH')!;
 const DATABASE_PATH = Deno.env.get('DATABASE_PATH')!;
