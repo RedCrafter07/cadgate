@@ -16,7 +16,7 @@
 				<IconKey class="text-[6rem] text-slate-400 mx-auto pb-4" />
 				<input tabindex="0" type="text" name="email" placeholder="Email">
 				<input type="password" name="password" placeholder="Password">
-				<button class="w-full bg-violet-500 text-slate-800 rounded-xl p-4 focus:scale-105 focus:outline-none transition-all duration-100">Test</button>
+				<button class="w-full bg-violet-500 text-slate-800 rounded-xl p-4 focus:scale-105 focus:outline-none transition-all duration-100">Log in!</button>
 			</form>
 		</div>
 	</div>
