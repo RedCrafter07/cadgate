@@ -19,6 +19,10 @@ class Logger {
 		this.write(chalk.white(...data));
 	}
 
+	info(...data: any[]) {
+		this.write(chalk.blueBright('[INFO]:', ...data));
+	}
+
 	warn(...text: string[]) {
 		this.write(chalk.yellow('[WARNING]:', ...text));
 	}
