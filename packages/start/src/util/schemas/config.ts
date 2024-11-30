@@ -17,7 +17,7 @@ const configSchema = z.object({
 	// 		'Since sqlite is not implemented, this is false by default. A future implementation will come.',
 	// 	),
 
-	proxyEntries: dbSchema.shape.proxyEntries,
+	proxyEntries: dbSchema.shape.proxyEntries.optional(),
 });
 
 export default configSchema;

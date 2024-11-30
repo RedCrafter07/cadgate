@@ -13,7 +13,6 @@ const dbSchema = z.object({
 			cloudflare: z.boolean().default(false),
 		})
 		.array()
-		.optional()
 		.describe(
 			'This will automatically override the current hosts. Hosts edited in the web dashboard will be disabled and may be selected to be deleted.',
 		),
