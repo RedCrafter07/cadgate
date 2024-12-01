@@ -1,8 +1,8 @@
 import { Logger } from '@/util/logger/index.ts';
-import configSchema from './util/schemas/config.ts';
+import configSchema from '@/util/schemas/config.ts';
 import * as YAML from '@std/yaml';
 import { Database } from '@/util/db/index.ts';
-import { dbSchema } from '@/util/db/schemas/db.ts';
+import { dbSchema } from '@/util/schemas/db.ts';
 import { encodeHex } from '@std/encoding/hex';
 
 const logger = new Logger();
