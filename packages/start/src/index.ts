@@ -13,7 +13,8 @@ const CONFIG_PATH = Deno.env.get('CONFIG_PATH')!;
 const DATABASE_PATH = Deno.env.get('DATABASE_PATH')!;
 const INIT_FILES = Boolean(Deno.env.get('INIT_FILES'));
 const DEFAULT_PASSWORD = Deno.env.get('DEFAULT_PASSWORD') ?? 'ch4ngem3';
-const ENABLE_CADDY_LOGS = Boolean(Deno.env.get('ENABLE_CADDY_LOGS'));
+// TODO: Add env variables for enabling specific logs
+// const ENABLE_CADDY_LOGS = Boolean(Deno.env.get('ENABLE_CADDY_LOGS'));
 
 const requiredEnvVariables = ['CONFIG_PATH', 'DATABASE_PATH'];
 
