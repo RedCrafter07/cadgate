@@ -1,5 +1,5 @@
 import { z } from 'npm:zod';
-import { dbSchema } from '../../../../util/db/schemas/db.ts';
+import { dbSchema } from './db.ts';
 
 const configSchema = z.object({
 	version: z.number().default(0.1).describe('Config version for migration'),
