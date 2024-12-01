@@ -2,11 +2,9 @@ FROM debian:bookworm-slim as base
 
 RUN apt update ; apt upgrade
 
-FROM base as deno
-
 RUN curl -fsSL https://deno.land/install.sh | sh
 
-FROM deno as starter
+FROM base as starter
 
 WORKDIR /starter
 
@@ -14,9 +12,7 @@ COPY packages/start .
 
 RUN deno install
 
-RUN deno run build
-
-FROM deno as interface
+FROM base as interface
 
 FROM base as final
 

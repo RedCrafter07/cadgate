@@ -1,7 +1,6 @@
 {
 	"tasks": {
 		"dev": "deno run --watch main.ts",
-		"build": "deno compile --output start -A src/index.ts",
 		"start": "deno run --env-file=.env -A src/index.ts"
 	},
 	"imports": {
