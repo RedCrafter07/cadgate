@@ -1,13 +1,14 @@
 {
-  "overrides": [{ "files": "*.svelte", "options": { "parser": "svelte" } }],
-  "arrowParens": "always",
-  "endOfLine": "lf",
-  "semi": true,
-  "singleQuote": true,
-  "alignObjectProperties": true,
-  "quoteProps": "as-needed",
-  "prettier.trailingComma": "all",
-  "prettier.useTabs": true,
-  "prettier.jsxSingleQuote": true,
-  "tabWidth": 4
+    "plugins": ["prettier-plugin-svelte"],
+    "overrides": [{ "files": "*.svelte", "options": { "parser": "svelte" } }],
+    "arrowParens": "always",
+    "endOfLine": "lf",
+    "semi": true,
+    "singleQuote": true,
+    "alignObjectProperties": true,
+    "quoteProps": "as-needed",
+    "prettier.trailingComma": "all",
+    "prettier.useTabs": true,
+    "prettier.jsxSingleQuote": true,
+    "tabWidth": 4
 }
