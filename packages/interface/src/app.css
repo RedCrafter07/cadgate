@@ -16,6 +16,14 @@ textarea {
     @apply bg-slate-800 border-none rounded-xl p-4 outline-none ring-transparent focus:ring-transparent placeholder:text-slate-500 transition-all duration-100;
 }
 
+.btn.btn-square {
+    @apply px-2 py-2;
+}
+
+.btn.btn-success.btn-outline:not(:disabled) {
+    @apply border-2 border-lime-600 text-lime-600 hover:text-white hover:bg-lime-600;
+}
+
 .btn {
     @apply px-4 py-2 rounded-xl transition-all duration-100;
 }
