@@ -39,17 +39,19 @@
             <span class="lg:block hidden">System</span></a
         >
 
-        <div class="lg:block hidden">
-            <button class="btn" disabled>
-                <IconUsers class="my-auto" />
-                <p class="my-auto">Users</p>
-                <span
-                    class="px-2 py-1 rounded-full bg-yellow-300 text-yellow-950 text-sm my-auto"
-                >
-                    Soon!
-                </span>
-            </button>
-        </div>
+        {#if user?.administrator}
+            <div class="lg:block hidden">
+                <button class="btn" disabled>
+                    <IconUsers class="my-auto" />
+                    <p class="my-auto">Users</p>
+                    <span
+                        class="px-2 py-1 rounded-full bg-yellow-300 text-yellow-950 text-sm my-auto"
+                    >
+                        Soon!
+                    </span>
+                </button>
+            </div>
+        {/if}
 
         <div class="lg:ml-auto">
             <button
