@@ -1,3 +1,4 @@
+import getUser from '$lib/api/getUser.js';
 import { validate } from '$lib/jwt/index.js';
 import type { User } from '$lib/schemas/user.js';
 import { redirect } from '@sveltejs/kit';
@@ -13,23 +14,9 @@ export const load = async ({ cookies, route }) => {
 
             if (moment().unix() > result.exp!) throw new Error();
 
-            const userRequest = await axios
-                .get('http://localhost:2000/user', {
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    method: 'GET',
-                    params: {
-                        id: result.sub,
-                    },
-                })
-                .catch(() => {
-                    throw new Error();
-                });
+            const u = await getUser({ id: result.sub });
 
-            const requestData = userRequest.data as User;
-
-            const user = { ...requestData, passwordHash: undefined };
+            const user = { ...u, passwordHash: undefined };
 
             return { user };
         } else {

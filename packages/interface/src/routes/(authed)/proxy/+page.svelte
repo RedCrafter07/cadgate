@@ -78,7 +78,9 @@
                     <td>
                         {@render checkIcons(proxy.enforceHttps)}
                     </td>
-                    <td>{@render checkIcons(proxy.cloudflare)}</td>
+                    <td>
+                        {@render checkIcons(proxy.cloudflare)}
+                    </td>
                 </tr>
             {:else}
                 <tr>
