@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-const userSchema = z.object({
+export const userSchema = z.object({
     id: z.string().default('The ID of the user, used internally'),
     name: z.string().default('The display name of the user'),
     email: z
