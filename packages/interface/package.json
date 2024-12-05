@@ -1,33 +1,34 @@
 {
-	"name": "frontend",
-	"version": "0.0.1",
-	"type": "module",
-	"scripts": {
-		"dev": "vite dev",
-		"build": "vite build",
-		"preview": "vite preview",
-		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
-		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch"
-	},
-	"devDependencies": {
-		"@fontsource-variable/dm-sans": "^5.1.0",
-		"@iconify/json": "^2.2.278",
-		"@sveltejs/adapter-auto": "^3.0.0",
-		"@sveltejs/adapter-node": "^5.2.9",
-		"@sveltejs/kit": "^2.0.0",
-		"@sveltejs/vite-plugin-svelte": "^4.0.0",
-		"@tailwindcss/forms": "^0.5.9",
-		"autoprefixer": "^10.4.20",
-		"axios": "^1.7.8",
-		"jose": "^5.9.6",
-		"moment": "^2.30.1",
-		"prettier-plugin-svelte": "^3.3.2",
-		"svelte": "^5.0.0",
-		"svelte-check": "^4.0.0",
-		"tailwindcss": "^3.4.9",
-		"typescript": "^5.0.0",
-		"unplugin-icons": "^0.20.2",
-		"vite": "^5.0.3",
-		"zod": "^3.23.8"
-	}
+    "name": "frontend",
+    "version": "0.0.1",
+    "type": "module",
+    "scripts": {
+        "dev": "deno run --env-file=../../.env dev:vite",
+        "dev:vite": "vite dev",
+        "build": "vite build",
+        "preview": "vite preview",
+        "check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
+        "check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch"
+    },
+    "devDependencies": {
+        "@fontsource-variable/dm-sans": "^5.1.0",
+        "@iconify/json": "^2.2.278",
+        "@sveltejs/adapter-auto": "^3.0.0",
+        "@sveltejs/adapter-node": "^5.2.9",
+        "@sveltejs/kit": "^2.0.0",
+        "@sveltejs/vite-plugin-svelte": "^4.0.0",
+        "@tailwindcss/forms": "^0.5.9",
+        "autoprefixer": "^10.4.20",
+        "axios": "^1.7.8",
+        "jose": "^5.9.6",
+        "moment": "^2.30.1",
+        "prettier-plugin-svelte": "^3.3.2",
+        "svelte": "^5.0.0",
+        "svelte-check": "^4.0.0",
+        "tailwindcss": "^3.4.9",
+        "typescript": "^5.0.0",
+        "unplugin-icons": "^0.20.2",
+        "vite": "^5.0.3",
+        "zod": "^3.23.8"
+    }
 }

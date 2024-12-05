@@ -16,7 +16,7 @@
 
 <div class="flex flex-col bg-slate-800 min-h-screen">
     <div
-        class="h-16 bg-slate-900 border-b border-slate-700 flex flex-row items-center lg:justify-start justify-evenly p-4 gap-4 fixed bottom-0 lg:top-0 w-full"
+        class="h-16 bg-slate-900 border-b border-slate-700 flex flex-row items-center lg:justify-start justify-evenly p-4 gap-2 fixed bottom-0 lg:top-0 w-full"
     >
         <a href="/" class="mr-8 flex-row gap-2 hidden lg:flex"
             ><IconCat class="text-lg opacity-90" />
@@ -39,15 +39,17 @@
             <span class="lg:block hidden">System</span></a
         >
 
-        <button class="btn lg:flex hidden" disabled>
-            <IconUsers class="my-auto" />
-            <p class="my-auto">Users</p>
-            <span
-                class="px-2 py-1 rounded-full bg-yellow-300 text-yellow-950 text-sm my-auto"
-            >
-                Soon!
-            </span>
-        </button>
+        <div class="lg:block hidden">
+            <button class="btn" disabled>
+                <IconUsers class="my-auto" />
+                <p class="my-auto">Users</p>
+                <span
+                    class="px-2 py-1 rounded-full bg-yellow-300 text-yellow-950 text-sm my-auto"
+                >
+                    Soon!
+                </span>
+            </button>
+        </div>
 
         <div class="lg:ml-auto">
             <button
