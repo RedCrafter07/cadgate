@@ -25,11 +25,11 @@ textarea {
 }
 
 .btn {
-    @apply px-4 py-2 rounded-xl transition-all duration-100;
+    @apply px-4 py-2 rounded-xl transition-all duration-100 flex flex-row gap-2;
 }
 
 .btn:not(:disabled) {
-    @apply hover:bg-slate-50 hover:bg-opacity-10 active:scale-90 items-center flex flex-row gap-2;
+    @apply hover:bg-slate-50 hover:bg-opacity-10 active:scale-90 items-center;
 }
 
 .btn:disabled {

@@ -1,6 +1,7 @@
 <script lang="ts">
     import { goto } from '$app/navigation';
     import IconUser from '~icons/tabler/user-circle';
+    import IconUsers from '~icons/tabler/users';
     import IconSettings from '~icons/tabler/settings';
     import IconDirections from '~icons/tabler/directions';
     import IconRoute from '~icons/tabler/route';
@@ -38,12 +39,16 @@
             <span class="lg:block hidden">System</span></a
         >
 
-        <button class="btn lg:block hidden" disabled
-            >Users <span
-                class="px-2 py-1 rounded-full bg-yellow-300 text-yellow-950 text-sm"
-                >Soon!</span
-            ></button
-        >
+        <button class="btn lg:flex hidden" disabled>
+            <IconUsers class="my-auto" />
+            <p class="my-auto">Users</p>
+            <span
+                class="px-2 py-1 rounded-full bg-yellow-300 text-yellow-950 text-sm my-auto"
+            >
+                Soon!
+            </span>
+        </button>
+
         <div class="lg:ml-auto">
             <button
                 class="btn"
