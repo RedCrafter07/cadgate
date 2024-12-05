@@ -47,8 +47,6 @@
     {/if}
 {/snippet}
 
-<!-- {@render popup({})} -->
-
 <div class="my-4"></div>
 
 <div class="p-3 rounded-xl bg-slate-900">
@@ -86,7 +84,7 @@
                 <tr>
                     <td colspan="5" class="text-center">
                         <div
-                            class="w-full flex flex-col gap-2 my-4 items-center justify-center"
+                            class="w-full flex flex-col gap-4 my-4 items-center justify-center"
                         >
                             <h3 class="text-xl">
                                 No proxy entries yet! Why don't you create one?
