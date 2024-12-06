@@ -195,7 +195,7 @@ router.put('/user/mailChange', async ({ request, response }) => {
 });
 
 app.use(router.routes());
-// app.use(router.allowedMethods());
+app.use(router.allowedMethods());
 
 app.addEventListener('listen', ({ hostname, port, secure }) => {
     console.log(
