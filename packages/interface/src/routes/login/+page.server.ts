@@ -26,15 +26,12 @@ export const actions = {
 
         const userRequest = await axios
             .get('http://localhost:2000/user', {
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                method: 'GET',
                 params: {
                     email: mail,
                 },
             })
             .catch((e: AxiosError) => {
+                console.log(e);
                 if (e.status !== 404) {
                     throw error(500);
                 }
@@ -52,7 +49,7 @@ export const actions = {
 
         const validationRequest = await axios
             .post(
-                'http://localhost:2000/users/validate',
+                'http://localhost:2000/user/validate',
                 {
                     id: user.id,
                     password,
@@ -63,7 +60,8 @@ export const actions = {
                     },
                 }
             )
-            .catch(() => {
+            .catch((e) => {
+                console.log(e.data);
                 error(500);
             });
 
