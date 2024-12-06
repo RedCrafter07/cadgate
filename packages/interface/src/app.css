@@ -12,6 +12,7 @@ body {
 
 input[type='text'],
 input[type='password'],
+input[type='email'],
 textarea {
     @apply bg-slate-800 border-none rounded-xl p-4 outline-none ring-transparent focus:ring-transparent placeholder:text-slate-500 transition-all duration-100;
 }

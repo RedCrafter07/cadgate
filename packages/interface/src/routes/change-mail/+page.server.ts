@@ -21,7 +21,7 @@ export const actions = {
         const mail = formData.get('mail');
 
         const input = z.object({
-            mail: z.string(),
+            mail: z.string().email(),
         });
 
         const validation = input.safeParse({
