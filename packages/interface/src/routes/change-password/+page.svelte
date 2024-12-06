@@ -5,6 +5,10 @@
     let password2 = $state('');
 </script>
 
+<svelte:head>
+    <title>Change Password | Cadgate</title>
+</svelte:head>
+
 <div class="mx-auto container p-2 lg:p-4 flex flex-col w-full gap-4">
     <div class="flex flex-col w-full gap-2">
         <h1 class="text-3xl">Change your password</h1>

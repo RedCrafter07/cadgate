@@ -12,6 +12,10 @@
     const { proxies } = $derived(data);
 </script>
 
+<svelte:head>
+    <title>Proxy Settings | Cadgate</title>
+</svelte:head>
+
 {#snippet popup(input: Partial<proxyEntry>)}
     <div
         class="fixed top-0 left-0 w-full h-full bg-slate-900 bg-opacity-25 backdrop-blur-md flex"
