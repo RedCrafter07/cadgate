@@ -1,4 +1,4 @@
-import changePassword from '$lib/api/changePassword.js';
+import changeMail from '$lib/api/changeMail';
 import { validate } from '$lib/jwt/index.js';
 import { error, fail, redirect } from '@sveltejs/kit';
 import { z } from 'zod';
@@ -7,6 +7,8 @@ export const load = async ({ parent }) => {
     const data = await parent();
 
     const user = data.user!;
+
+    return { ...data, user };
 };
 
 export const actions = {
@@ -16,17 +18,14 @@ export const actions = {
         if (!userID) throw error(500);
 
         const formData = await request.formData();
-        const currentPass = formData.get('currentPass');
-        const newPass = formData.get('newPass');
+        const mail = formData.get('mail');
 
         const input = z.object({
-            currentPassword: z.string(),
-            newPassword: z.string(),
+            mail: z.string(),
         });
 
         const validation = input.safeParse({
-            currentPassword: currentPass,
-            newPassword: newPass,
+            mail,
         });
 
         if (!validation.success) {
@@ -38,7 +37,7 @@ export const actions = {
 
         const { data } = validation;
 
-        await changePassword(userID, data.currentPassword, data.newPassword);
+        await changeMail(userID, data.mail);
 
         throw redirect(307, '/');
     },
