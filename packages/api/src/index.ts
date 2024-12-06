@@ -1,55 +1,61 @@
-// @deno-types="npm:@types/express"
-import express from 'npm:express';
 import { z } from 'npm:zod';
+import { Application, Router } from 'jsr:@oak/oak';
 
 import { dbSchema } from '@/util/schemas/db.ts';
 import { Database } from '@/util/db/index.ts';
 import { hashPassword } from '@/util/functions/hashPassword.ts';
 
-const PORT = Deno.env.get('PORT') ?? 2000;
+const PORT = Number(Deno.env.get('PORT')) || 2000;
 const DATABASE_PATH = Deno.env.get('DATABASE_PATH')!;
-
-const app = express();
-
-app.use(express.json());
 
 const db = new Database(DATABASE_PATH, dbSchema);
 
-app.get('/proxy', async (_, res) => {
+const app = new Application();
+
+const router = new Router();
+
+router.get('/proxy', async ({ response: res }) => {
     const proxyEntries = await db.getData('proxyEntries');
 
-    res.status(200).json(proxyEntries);
+    res.status = 200;
+
+    res.body = proxyEntries;
 });
 
-app.get('/user', async (req, res) => {
-    if (!req.params) {
-        res.sendStatus(400);
+router.get('/user', async ({ request, response }) => {
+    const params = [...request.url.searchParams.entries()].reduce((p, c) => {
+        const [key, value] = c;
+        p[key] = value;
+        return p;
+    }, {} as Record<string, unknown>);
+
+    if (!params) {
+        response.status = 400;
         return;
     }
-
-    const { params } = req;
 
     const user = await findUser(params as any);
 
     if (user === false) {
-        res.sendStatus(404);
+        response.status = 404;
         return;
     }
 
-    res.status(200).json(user);
+    response.status = 200;
+    response.body = user;
 });
 
-app.put('/user/password', async (req, res) => {
-    const requestSchema = z.object({
+router.post('/user/validate', async ({ request: req, response: res }) => {
+    const bodySchema = z.object({
         id: z.string(),
-        current: z.string(),
-        to: z.string(),
+        password: z.string(),
     });
 
-    const validation = requestSchema.safeParse(req.body);
+    const validation = bodySchema.safeParse(await req.body.json());
 
     if (!validation.success) {
-        res.sendStatus(400);
+        res.status = 400;
+        res.body = validation.error;
         return;
     }
 
@@ -58,16 +64,51 @@ app.put('/user/password', async (req, res) => {
     const user = await findUser({ id: data.id });
 
     if (!user) {
-        res.sendStatus(404);
+        res.status = 404;
         return;
     }
 
-    if (!(await comparePasswords(user.passwordHash, data.current))) {
-        res.sendStatus(401);
+    const { passwordHash } = user;
+
+    const passwordMatch = await comparePasswords(passwordHash, data.password);
+
+    res.status = 200;
+    res.body = {
+        valid: passwordMatch,
+    };
+});
+
+router.put('/user/password', async ({ request, response }) => {
+    const requestSchema = z.object({
+        id: z.string(),
+        current: z.string().optional(),
+        to: z.string(),
+    });
+
+    const validation = requestSchema.safeParse(await request.body.json());
+
+    if (!validation.success) {
+        response.status = 400;
         return;
     }
 
-    if (user.requiresNewPassword) user.requiresNewPassword = false;
+    const { data } = validation;
+
+    const user = await findUser({ id: data.id });
+
+    if (!user) {
+        response.status = 404;
+        return;
+    }
+
+    if (data.current) {
+        if (!(await comparePasswords(user.passwordHash, data.current))) {
+            response.status = 401;
+            return;
+        }
+    }
+
+    user.requiresNewPassword = false;
 
     const passwordHash = await hashPassword(data.to);
 
@@ -77,82 +118,95 @@ app.put('/user/password', async (req, res) => {
     });
 
     if (!success) {
-        res.sendStatus(500);
+        response.status = 500;
         return;
     }
 
-    res.sendStatus(200);
+    response.status = 200;
 });
 
-app.put('/user/email', async (req, res) => {});
-
-app.put('/user/passChange', async (req, res) => {
-    const { change } = req.body;
-    const { user: userFilter } = req.body;
-
-    const user = await findUser(userFilter);
-
-    if (!user) {
-        res.sendStatus(404);
-        return;
-    }
-
-    const success = await updateUser(user.id, { requiresNewPassword: change });
-
-    res.status(200).json({ success });
-});
-
-app.put('/user/mailChange', async (req, res) => {
-    const { change } = req.body;
-    const { user: userFilter } = req.body;
-
-    const user = await findUser(userFilter);
-
-    if (!user) {
-        res.sendStatus(404);
-        return;
-    }
-
-    const success = await updateUser(user.id, { requiresNewEmail: change });
-
-    res.status(200).json({ success });
-});
-
-app.post('/users/validate', async (req, res) => {
-    const bodySchema = z.object({
+router.put('/user/email', async ({ request, response }) => {
+    const requestSchema = z.object({
         id: z.string(),
-        password: z.string(),
+        to: z.string(),
     });
 
-    const validation = bodySchema.safeParse(req.body);
+    const validation = requestSchema.safeParse(await request.body.json());
 
     if (!validation.success) {
-        res.status(400).json(validation.error);
+        response.status = 400;
         return;
     }
 
     const { data } = validation;
 
-    const user = (await db.getData('users')).find((u) => u.id === data.id);
+    const user = await findUser({ id: data.id });
 
     if (!user) {
-        res.sendStatus(404);
+        response.status = 404;
         return;
     }
 
-    const { passwordHash } = user;
+    user.requiresNewEmail = false;
 
-    const passwordMatch = await comparePasswords(passwordHash, data.password);
+    const success = await updateUser(user.id, {
+        ...user,
+        email: data.to,
+    });
 
-    if (passwordMatch) {
-        res.status(200).json({
-            valid: true,
-        });
-    } else {
-        res.status(200).json({
-            valid: false,
-        });
+    if (!success) {
+        response.status = 500;
+        return;
     }
+
+    response.status = 200;
+});
+
+router.put('/user/passChange', async ({ request, response }) => {
+    const { change, user: userFilter } = await request.body.json();
+
+    const user = await findUser(userFilter);
+
+    if (!user) {
+        response.status = 404;
+        return;
+    }
+
+    const success = await updateUser(user.id, { requiresNewPassword: change });
+
+    response.status = 200;
+    response.body = { success };
+});
+
+router.put('/user/mailChange', async ({ request, response }) => {
+    const { change, user: userFilter } = await request.body.json();
+
+    const user = await findUser(userFilter);
+
+    if (!user) {
+        response.status = 404;
+        return;
+    }
+
+    const success = await updateUser(user.id, { requiresNewEmail: change });
+
+    response.status = 200;
+    response.body = { success };
+});
+
+app.use(router.routes());
+// app.use(router.allowedMethods());
+
+app.addEventListener('listen', ({ hostname, port, secure }) => {
+    console.log(
+        `Listening on: ${secure ? 'https://' : 'http://'}${
+            hostname ?? 'localhost'
+        }:${port}`
+    );
+});
+
+app.listen({
+    port: PORT,
 });
 
 const userSchema = dbSchema.shape.users.element;
@@ -217,7 +271,3 @@ async function comparePasswords(hash: string, input: string) {
 
     return hashedPassword === hash;
 }
-
-app.listen(PORT, () => {
-    console.log(`API Server started on Port ${PORT}!`);
-});
