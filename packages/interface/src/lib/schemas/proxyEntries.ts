@@ -6,7 +6,7 @@ const proxyEntries = z
             .string()
             .array()
             .min(1)
-            .describe('The hosts that are proxied to the "To" entry'),
+            .describe('The hosts proxied to the "To" entry'),
         to: z.string().describe('The location the hosts are proxied to'),
         enforceHttps: z
             .boolean()
@@ -22,5 +22,7 @@ const proxyEntries = z
         id: z.string().default(() => crypto.randomUUID().split('-').join('')),
     })
     .array();
+
+export type proxyEntry = z.infer<typeof proxyEntries.element>;
 
 export { proxyEntries };
