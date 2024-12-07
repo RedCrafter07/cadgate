@@ -1,0 +1,53 @@
+import { Database } from '@/util/db/index.ts';
+import { dbSchema } from '@/util/schemas/db.ts';
+import { finderFactory } from '@/util/functions/factories/finder.ts';
+import { pushFactory } from '@/util/functions/factories/push.ts';
+import { updateFactory } from '@/util/functions/factories/update.ts';
+
+const DATABASE_PATH = Deno.env.get('DATABASE_PATH')!;
+
+export const db = new Database(DATABASE_PATH, dbSchema);
+
+export const userSchema = dbSchema.shape.users.element;
+export const proxySchema = dbSchema.shape.proxyEntries.element;
+export const redirectSchema = dbSchema.shape.redirectEntries.element;
+
+export const findUser = finderFactory(
+    async () => await db.getData('users'),
+    userSchema
+);
+export const updateUser = updateFactory(
+    async () => await db.getData('users'),
+    async (d) => await db.push('users', d),
+    userSchema
+);
+
+export const findProxy = finderFactory(
+    async () => await db.getData('proxyEntries'),
+    proxySchema
+);
+export const updateProxy = updateFactory(
+    async () => await db.getData('proxyEntries'),
+    async (d) => await db.push('proxyEntries', d),
+    proxySchema
+);
+export const pushProxy = pushFactory(
+    async () => await db.getData('proxyEntries'),
+    async (d) => await db.push('proxyEntries', d),
+    proxySchema
+);
+
+export const findRedirect = finderFactory(
+    async () => await db.getData('redirectEntries'),
+    redirectSchema
+);
+export const updateRedirect = updateFactory(
+    async () => await db.getData('redirectEntries'),
+    async (d) => await db.push('redirectEntries', d),
+    redirectSchema
+);
+export const pushRedirect = pushFactory(
+    async () => await db.getData('redirectEntries'),
+    async (d) => await db.push('redirectEntries', d),
+    redirectSchema
+);

@@ -1,26 +1,28 @@
 import { z } from 'npm:zod';
 import { Application, Router } from 'jsr:@oak/oak';
 
-import { dbSchema } from '@/util/schemas/db.ts';
-import { Database } from '@/util/db/index.ts';
+import { findUser, updateUser } from './util/db.ts';
 import { hashPassword } from '@/util/functions/hashPassword.ts';
+import proxy from './util/routes/proxy.ts';
 
 const PORT = Number(Deno.env.get('PORT')) || 2000;
-const DATABASE_PATH = Deno.env.get('DATABASE_PATH')!;
-
-const db = new Database(DATABASE_PATH, dbSchema);
 
 const app = new Application();
 
 const router = new Router();
 
-router.get('/proxy', async ({ response: res }) => {
-    const proxyEntries = await db.getData('proxyEntries');
+// TODO:
+// - Audit Logging
+// - User management & permissions
+// - Redirect Settings
+// - System Settings
+// - Caddy Config Generation
+// - 2FA/WebAuthn
 
-    res.status = 200;
+// Done:
+// - Proxy Settings
 
-    res.body = proxyEntries;
-});
+router.use('/proxy', proxy.routes(), proxy.allowedMethods());
 
 router.get('/user', async ({ request, response }) => {
     const params = [...request.url.searchParams.entries()].reduce((p, c) => {
@@ -112,10 +114,12 @@ router.put('/user/password', async ({ request, response }) => {
 
     const passwordHash = await hashPassword(data.to);
 
-    const success = await updateUser(user.id, {
-        ...user,
-        passwordHash,
-    });
+    const success = await updateUser(
+        { id: user.id },
+        {
+            passwordHash,
+        }
+    );
 
     if (!success) {
         response.status = 500;
@@ -128,7 +132,7 @@ router.put('/user/password', async ({ request, response }) => {
 router.put('/user/email', async ({ request, response }) => {
     const requestSchema = z.object({
         id: z.string(),
-        to: z.string(),
+        to: z.string().email(),
     });
 
     const validation = requestSchema.safeParse(await request.body.json());
@@ -149,10 +153,12 @@ router.put('/user/email', async ({ request, response }) => {
 
     user.requiresNewEmail = false;
 
-    const success = await updateUser(user.id, {
-        ...user,
-        email: data.to,
-    });
+    const success = await updateUser(
+        { id: user.id },
+        {
+            email: data.to,
+        }
+    );
 
     if (!success) {
         response.status = 500;
@@ -172,7 +178,10 @@ router.put('/user/passChange', async ({ request, response }) => {
         return;
     }
 
-    const success = await updateUser(user.id, { requiresNewPassword: change });
+    const success = await updateUser(
+        { id: user.id },
+        { requiresNewPassword: change }
+    );
 
     response.status = 200;
     response.body = { success };
@@ -188,7 +197,10 @@ router.put('/user/mailChange', async ({ request, response }) => {
         return;
     }
 
-    const success = await updateUser(user.id, { requiresNewEmail: change });
+    const success = await updateUser(
+        { id: user.id },
+        { requiresNewEmail: change }
+    );
 
     response.status = 200;
     response.body = { success };
@@ -208,63 +220,6 @@ app.addEventListener('listen', ({ hostname, port, secure }) => {
 app.listen({
     port: PORT,
 });
-
-const userSchema = dbSchema.shape.users.element;
-const userFields = userSchema.keyof();
-type userKeys = z.infer<typeof userFields>;
-type userSchema = z.infer<typeof userSchema>;
-
-async function updateUser(id: string, data: Partial<userSchema>) {
-    const parseResult = userSchema.safeParse(data);
-
-    if (!parseResult.success) return false;
-
-    const users = await db.getData('users');
-
-    const userIndex = users.findIndex((u) => u.id === id);
-
-    if (userIndex < 0) return false;
-
-    const user = users[userIndex];
-
-    for (const key in data) {
-        const typedKey = key as userKeys;
-        const property = data[typedKey];
-
-        user[typedKey] = property as never;
-    }
-
-    users[userIndex] = user;
-
-    await db.push('users', users);
-
-    return true;
-}
-
-async function findUser(
-    filter: Partial<Record<userKeys, unknown>>
-): Promise<userSchema | false> {
-    const users = await db.getData('users');
-
-    const keys = Object.keys(filter);
-    const valid = keys.every((k) => userFields.safeParse(k).success);
-
-    if (!valid) {
-        return false;
-    }
-
-    const typedKeys = keys as userKeys[];
-
-    const user = users.find((u) => {
-        return typedKeys.every(
-            (v) => u[v] === (filter as Record<userKeys, unknown>)[v]
-        );
-    });
-
-    if (!user) return false;
-
-    return user;
-}
 
 async function comparePasswords(hash: string, input: string) {
     const hashedPassword = await hashPassword(input);
