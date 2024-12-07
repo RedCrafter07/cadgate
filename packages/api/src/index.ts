@@ -1,5 +1,6 @@
 import { Application, Router } from 'jsr:@oak/oak';
 import proxy from './util/routes/proxy.ts';
+import redirect from './util/routes/redirect.ts';
 import user from './util/routes/user.ts';
 
 const PORT = Number(Deno.env.get('PORT')) || 2000;
@@ -20,6 +21,7 @@ const router = new Router();
 // - Proxy Settings
 
 router.use('/proxy', proxy.routes(), proxy.allowedMethods());
+router.use('/redirect', redirect.routes(), redirect.allowedMethods());
 router.use('/user', user.routes(), user.allowedMethods());
 
 app.use(router.routes());
