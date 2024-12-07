@@ -11,5 +11,5 @@ export const load = async ({ parent }) => {
         throw redirect(307, '/change-mail');
     }
 
-    return { ...data };
+    return { ...data, user };
 };

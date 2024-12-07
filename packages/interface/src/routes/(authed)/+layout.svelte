@@ -63,7 +63,7 @@
             >
                 <span class="hidden lg:flex flex-row gap-2">
                     <IconUser class="text-xl" />
-                    <p>Logged in as {user!.name}</p>
+                    <p>Logged in as {user.name}</p>
                 </span>
                 <span class="block lg:hidden">
                     <IconLogout class="text-xl" />
