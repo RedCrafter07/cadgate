@@ -1,9 +1,9 @@
-import axios from 'axios';
 import { type User } from '$lib/schemas/user';
+import api from '../../api';
 
 export default async function getUser(input: Partial<User>) {
-    const userRequest = await axios
-        .get('http://localhost:2000/user', {
+    const userRequest = await api
+        .get('/user', {
             headers: {
                 'Content-Type': 'application/json',
             },

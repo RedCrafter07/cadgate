@@ -1,7 +1,7 @@
-import axios from 'axios';
+import api from '../../api';
 
 export default async function changeMail(id: string, to: string) {
-    await axios.put('http://localhost:2000/user/email', {
+    await api.put('/user/email', {
         id,
         to,
     });

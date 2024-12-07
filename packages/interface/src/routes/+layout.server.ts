@@ -1,4 +1,4 @@
-import getUser from '$lib/api/getUser.js';
+import getUser from '$lib/api/functions/user/get.js';
 import { validate } from '$lib/jwt/index.js';
 import type { User } from '$lib/schemas/user.js';
 import { redirect } from '@sveltejs/kit';

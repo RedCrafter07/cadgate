@@ -1,11 +1,11 @@
-import axios from 'axios';
+import api from '../../api';
 
 export default async function changePassword(
     id: string,
     current: string,
     to: string
 ) {
-    await axios.put('http://localhost:2000/user/password', {
+    await api.put('/user/password', {
         id,
         current,
         to,

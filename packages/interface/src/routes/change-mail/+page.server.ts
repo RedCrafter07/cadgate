@@ -1,4 +1,4 @@
-import changeMail from '$lib/api/changeMail';
+import changeMail from '$lib/api/functions/user/changeMail';
 import { validate } from '$lib/jwt/index.js';
 import { error, fail, redirect } from '@sveltejs/kit';
 import { z } from 'zod';

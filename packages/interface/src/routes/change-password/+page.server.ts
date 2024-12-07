@@ -1,4 +1,4 @@
-import changePassword from '$lib/api/changePassword.js';
+import changePassword from '$lib/api/functions/user/changePassword.js';
 import { validate } from '$lib/jwt/index.js';
 import { error, fail, redirect } from '@sveltejs/kit';
 import { z } from 'zod';
