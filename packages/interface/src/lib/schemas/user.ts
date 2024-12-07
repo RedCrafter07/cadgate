@@ -1,8 +1,11 @@
 import { z } from 'zod';
 
 export const userSchema = z.object({
-    id: z.string().default('The ID of the user, used internally'),
-    name: z.string().default('The display name of the user'),
+    id: z
+        .string()
+        .describe('The ID of the user, used internally')
+        .default(() => crypto.randomUUID().split('-').join('')),
+    name: z.string().describe('The display name of the user'),
     email: z
         .string()
         .email()

@@ -19,6 +19,7 @@ const proxyEntries = z
                 'Integrate this endpoint with your CloudFlare Credentials'
             ),
         name: z.string().optional(),
+        id: z.string().default(() => crypto.randomUUID().split('-').join('')),
     })
     .array();
 
