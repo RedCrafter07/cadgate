@@ -29,6 +29,14 @@ textarea {
     @apply border-2 border-red-500 text-red-500 hover:text-white hover:bg-red-500;
 }
 
+.btn.btn-warning.btn-outline:not(:disabled) {
+    @apply border-2 border-yellow-500 text-yellow-500 hover:text-white hover:bg-yellow-500;
+}
+
+.btn.btn-info.btn-outline:not(:disabled) {
+    @apply border-2 border-blue-500 text-blue-500 hover:text-white hover:bg-blue-500;
+}
+
 .btn {
     @apply px-4 py-2 rounded-xl transition-all duration-100 flex flex-row gap-2;
 }

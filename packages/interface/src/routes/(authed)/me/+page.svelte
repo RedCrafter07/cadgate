@@ -5,10 +5,10 @@
     import { startRegistration } from '@simplewebauthn/browser';
     import axios from 'axios';
     import IconTrash from '~icons/tabler/trash';
-    import IconRefresh from '~icons/tabler/refresh';
-    import IconX from '~icons/tabler/x';
-    import IconCheck from '~icons/tabler/check';
-    import { fly } from 'svelte/transition';
+    import IconLogout from '~icons/tabler/logout';
+    import IconMail from '~icons/tabler/mail';
+    import IconLock from '~icons/tabler/lock';
+    import { goto } from '$app/navigation';
 
     let { data, form }: { data: PageData; form: ActionData } = $props();
 
@@ -98,51 +98,78 @@
     </div>
 {/snippet}
 
-<div class="flex flex-col p-4 gap-4 bg-slate-900 rounded-xl">
-    <form
-        action="?/register"
-        method="post"
-        use:enhance
-        class="flex flex-col gap-4"
-    >
-        <h3 class="text-2xl">WebAuthn</h3>
-        <div class="flex flex-row gap-2">
-            <input
-                name="name"
-                type="text"
-                class="flex-1"
-                placeholder="Display Name"
-                required
-            />
+<div class="flex flex-col gap-8 mt-4">
+    <div class="flex flex-col p-4 gap-4 bg-slate-900 rounded-xl">
+        <h3 class="text-2xl">Quick Access</h3>
+        <div class="flex flex-row gap-4">
             <button
-                class="btn"
-                disabled={passkeyRegistration.type === 'loading'}
+                class="btn btn-outline btn-error"
+                onclick={() => {
+                    goto('/logout');
+                }}><IconLogout /> Log Out</button
             >
-                Setup WebAuthn
-            </button>
+            <button
+                class="btn btn-outline btn-warning"
+                onclick={() => {
+                    goto('/change-password');
+                }}><IconLock /> Change Password</button
+            >
+            <button
+                class="btn btn-outline btn-info"
+                onclick={() => {
+                    goto('/change-mail');
+                }}><IconMail /> Change Mail</button
+            >
         </div>
-    </form>
+    </div>
+    <div class="flex flex-col p-4 gap-4 bg-slate-900 rounded-xl">
+        <form
+            action="?/register"
+            method="post"
+            use:enhance
+            class="flex flex-col gap-4"
+        >
+            <h3 class="text-2xl">WebAuthn</h3>
+            <div class="flex flex-row gap-2">
+                <input
+                    name="name"
+                    type="text"
+                    class="flex-1"
+                    placeholder="Display Name"
+                    required
+                />
+                <button
+                    class="btn"
+                    disabled={passkeyRegistration.type === 'loading'}
+                >
+                    Setup WebAuthn
+                </button>
+            </div>
+        </form>
 
-    {#if deleteID}
-        {@render deleteKeyPopup(deleteID)}
-    {/if}
+        {#if deleteID}
+            {@render deleteKeyPopup(deleteID)}
+        {/if}
 
-    {#if data.passkeys.length > 0}
-        <div class="flex flex-col gap-2">
-            {#each data.passkeys as key}
-                <div class="flex flex-row items-center justify-between gap-2">
-                    <p class="text-lg">{key.name}</p>
-
-                    <button
-                        class="btn btn-square"
-                        onclick={() => {
-                            deleteID = key.id;
-                        }}
+        {#if data.passkeys.length > 0}
+            <div class="flex flex-col gap-2">
+                {#each data.passkeys as key}
+                    <div
+                        class="flex flex-row items-center justify-between gap-2"
                     >
-                        <IconTrash class="text-lg text-red-500" />
-                    </button>
-                </div>
-            {/each}
-        </div>
-    {/if}
+                        <p class="text-lg">{key.name}</p>
+
+                        <button
+                            class="btn btn-square"
+                            onclick={() => {
+                                deleteID = key.id;
+                            }}
+                        >
+                            <IconTrash class="text-lg text-red-500" />
+                        </button>
+                    </div>
+                {/each}
+            </div>
+        {/if}
+    </div>
 </div>
