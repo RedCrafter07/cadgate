@@ -4,6 +4,8 @@
     import IconPlus from '~icons/tabler/plus';
     import { z } from 'zod';
     import { proxyEntries } from '$lib/schemas/proxyEntries.js';
+    import Switch from '$lib/components/Switch.svelte';
+    import { fade } from 'svelte/transition';
 
     type proxyEntry = z.infer<typeof proxyEntries.element>;
 
@@ -16,22 +18,63 @@
     <title>Proxy Settings | Cadgate</title>
 </svelte:head>
 
+{#snippet Input({
+    name,
+    placeholder,
+    label,
+    value,
+    onInput,
+}: {
+    name: string;
+    label?: string;
+    placeholder?: string;
+    value?: string;
+    onInput?: (t: string) => void;
+})}
+    <div class="flex flex-col gap-2">
+        {#if label}<p>{label}</p>{/if}
+        <input
+            type="text"
+            class="w-full"
+            {name}
+            {placeholder}
+            {value}
+            oninput={(e) => {
+                if (onInput) onInput(e.currentTarget.value);
+            }}
+        />
+    </div>
+{/snippet}
+
 {#snippet popup(input: Partial<proxyEntry>)}
     <div
+        transition:fade={{ duration: 150 }}
         class="fixed top-0 left-0 w-full h-full bg-slate-900 bg-opacity-25 backdrop-blur-md flex"
     >
         <div
-            class="bg-slate-900 rounded-xl p-8 w-3/4 h-3/4 m-auto border-slate-600 border drop-shadow-2xl flex flex-col gap-4"
+            class="bg-slate-900 lg:rounded-xl p-8 w-full h-full lg:w-3/4 lg:h-max m-auto border-slate-600 lg:border drop-shadow-2xl flex flex-col gap-4"
         >
-            <h1 class="text-3xl">Proxy entry</h1>
+            <div class="flex flex-row justify-between">
+                <h1 class="text-3xl">Proxy entry</h1>
+                <button class="btn btn-square" onclick={() => {}}>
+                    <IconX class="text-xl" />
+                </button>
+            </div>
 
-            <input
-                type="text"
-                name=""
-                class="w-full"
-                placeholder="Display Name"
-                value={input.name}
-            />
+            {@render Input({
+                name: 'name',
+                placeholder: 'My website',
+                label: 'Display Name',
+            })}
+
+            {@render Input({
+                name: 'to',
+                placeholder: 'localhost:4242',
+                label: 'Forward Host',
+            })}
+
+            <Switch name="enforceHttps" label="Enforce HTTPS" />
+            <Switch name="enforceHttps" label="Cloudflare Integration" />
         </div>
     </div>
 {/snippet}
@@ -50,6 +93,8 @@
         <IconX />
     {/if}
 {/snippet}
+
+{@render popup({})}
 
 <div class="my-4"></div>
 
