@@ -11,6 +11,7 @@ export const db = new Database(DATABASE_PATH, dbSchema);
 export const userSchema = dbSchema.shape.users.element;
 export const proxySchema = dbSchema.shape.proxyEntries.element;
 export const redirectSchema = dbSchema.shape.redirectEntries.element;
+export const passkeySchema = dbSchema.shape.passkeys.element;
 
 export const findUser = finderFactory(
     async () => await db.getData('users'),
@@ -50,4 +51,19 @@ export const pushRedirect = pushFactory(
     async () => await db.getData('redirectEntries'),
     async (d) => await db.push('redirectEntries', d),
     redirectSchema
+);
+
+export const findPasskey = finderFactory(
+    async () => await db.getData('passkeys'),
+    passkeySchema
+);
+export const updatePasskey = updateFactory(
+    async () => await db.getData('passkeys'),
+    async (d) => await db.push('passkeys', d),
+    passkeySchema
+);
+export const pushPasskey = pushFactory(
+    async () => await db.getData('passkeys'),
+    async (d) => await db.push('passkeys', d),
+    passkeySchema
 );

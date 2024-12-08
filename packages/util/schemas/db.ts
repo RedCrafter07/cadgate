@@ -72,6 +72,30 @@ const dbSchema = z.object({
                 .describe('Gives full permission to everything'),
             requiresNewEmail: z.boolean().default(false),
             requiresNewPassword: z.boolean().default(false),
+            challenge: z.string().or(z.null()).default(null),
+        })
+        .array(),
+
+    passkeys: z
+        .object({
+            userID: z.string(),
+            id: z.string(),
+            publicKey: z.instanceof(Uint8Array),
+            counter: z.number(),
+            transports: z
+                .enum([
+                    'ble',
+                    'cable',
+                    'hybrid',
+                    'internal',
+                    'nfc',
+                    'smart-card',
+                    'usb',
+                ])
+                .array()
+                .or(z.undefined()),
+            deviceType: z.enum(['singleDevice', 'multiDevice']),
+            backedUp: z.boolean(),
         })
         .array(),
 
