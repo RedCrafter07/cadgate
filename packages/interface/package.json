@@ -13,6 +13,8 @@
     "devDependencies": {
         "@fontsource-variable/dm-sans": "^5.1.0",
         "@iconify/json": "^2.2.278",
+        "@simplewebauthn/browser": "^12.0.0",
+        "@simplewebauthn/types": "^12.0.0",
         "@sveltejs/adapter-auto": "^3.0.0",
         "@sveltejs/adapter-node": "^5.2.9",
         "@sveltejs/kit": "^2.0.0",
