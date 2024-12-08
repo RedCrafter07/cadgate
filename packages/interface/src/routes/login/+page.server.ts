@@ -85,7 +85,6 @@ export const actions = {
         throw redirect(307, '/');
     },
     passkey: async ({ cookies }) => {
-        console.log('mhm');
         const data = await getLoginOptions();
 
         if (!data) return fail(500);
