@@ -4,7 +4,32 @@
     import { enhance } from '$app/forms';
     import type { ActionData } from './$types';
 
+    import { startAuthentication } from '@simplewebauthn/browser';
+    import axios from 'axios';
+    import { goto } from '$app/navigation';
+
     let { form }: { form: ActionData } = $props();
+
+    $effect(() => {
+        if (form?.options) {
+            (async () => {
+                let asseResp;
+                try {
+                    asseResp = await startAuthentication({
+                        optionsJSON: form.options,
+                    });
+                } catch (error) {
+                    throw error;
+                }
+
+                const res = await axios.post('/passkey/login', asseResp);
+
+                if (res.data.success) {
+                    goto('/');
+                }
+            })();
+        }
+    });
 </script>
 
 <svelte:head>
@@ -26,38 +51,47 @@
         </div>
         <div class="h-full bg-slate-50 w-px opacity-10 hidden lg:block"></div>
         <div class="lg:flex-1 flex">
-            <form
-                class="flex flex-col gap-4 w-full my-auto"
-                method="post"
-                use:enhance
-            >
-                <IconCat
-                    class="hidden lg:block lg:text-[6rem] text-slate-400 mx-auto pb-4"
-                />
-                {#if form && !form.success && form.message}
-                    <p class="text-center bg-red-500 rounded-lg p-2">
-                        {form.message}
-                    </p>
-                {/if}
-                <input
-                    tabindex="0"
-                    type="text"
-                    name="email"
-                    placeholder="Email"
-                    value={form?.mail ?? ''}
-                    required
-                />
-                <input
-                    type="password"
-                    name="password"
-                    placeholder="Password"
-                    required
-                />
-                <button
-                    class="w-full bg-violet-500 text-slate-800 rounded-xl p-4 focus:scale-105 focus:outline-none transition-all duration-100"
-                    >Log in!</button
+            <div class="flex flex-col gap-4 w-full my-auto">
+                <form
+                    class="flex flex-col gap-4 w-full my-auto"
+                    action="?/login"
+                    method="post"
+                    use:enhance
                 >
-            </form>
+                    <IconCat
+                        class="hidden lg:block lg:text-[6rem] text-slate-400 mx-auto pb-4"
+                    />
+                    {#if form && !form.success && form.message}
+                        <p class="text-center bg-red-500 rounded-lg p-2">
+                            {form.message}
+                        </p>
+                    {/if}
+                    <input
+                        tabindex="0"
+                        type="text"
+                        name="email"
+                        placeholder="Email"
+                        value={form?.mail ?? ''}
+                        required
+                    />
+                    <input
+                        type="password"
+                        name="password"
+                        placeholder="Password"
+                        required
+                    />
+                    <button
+                        class="w-full bg-violet-500 text-slate-800 rounded-xl p-4 focus:scale-105 focus:outline-none transition-all duration-100"
+                        >Log in!</button
+                    >
+                </form>
+
+                <form action="?/passkey" method="post" use:enhance>
+                    <button class="btn justify-center w-full">
+                        Or use a passkey instead
+                    </button>
+                </form>
+            </div>
         </div>
     </div>
 </div>

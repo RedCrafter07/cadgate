@@ -2,6 +2,7 @@ import { error, fail, redirect } from '@sveltejs/kit';
 import axios, { AxiosError } from 'axios';
 import * as jwt from '$lib/jwt';
 import type { User } from '$lib/schemas/user.js';
+import getLoginOptions from '$lib/api/functions/webauthn/login/options.js';
 
 export const load = ({ cookies }) => {
     if (cookies.get('token')) {
@@ -10,7 +11,7 @@ export const load = ({ cookies }) => {
 };
 
 export const actions = {
-    default: async ({ request, cookies }) => {
+    login: async ({ request, cookies }) => {
         const data = await request.formData();
 
         const mail = data.get('email')?.toString();
@@ -82,5 +83,14 @@ export const actions = {
         });
 
         throw redirect(307, '/');
+    },
+    passkey: async ({ cookies }) => {
+        console.log('mhm');
+        const data = await getLoginOptions();
+
+        if (!data) return fail(500);
+
+        cookies.set('loginSession', data.sID, { path: '/' });
+        return { options: data.options };
     },
 };
