@@ -78,9 +78,10 @@ const dbSchema = z.object({
 
     passkeys: z
         .object({
+            name: z.string(),
             userID: z.string(),
             id: z.string(),
-            publicKey: z.instanceof(Uint8Array),
+            publicKey: z.any(),
             counter: z.number(),
             transports: z
                 .enum([

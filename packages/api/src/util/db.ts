@@ -1,8 +1,10 @@
 import { Database } from '@/util/db/index.ts';
 import { dbSchema } from '@/util/schemas/db.ts';
 import { finderFactory } from '@/util/functions/factories/finder.ts';
+import { filterFactory } from '@/util/functions/factories/filter.ts';
 import { pushFactory } from '@/util/functions/factories/push.ts';
 import { updateFactory } from '@/util/functions/factories/update.ts';
+import { deleteFactory } from '@/util/functions/factories/delete.ts';
 
 const DATABASE_PATH = Deno.env.get('DATABASE_PATH')!;
 
@@ -57,12 +59,21 @@ export const findPasskey = finderFactory(
     async () => await db.getData('passkeys'),
     passkeySchema
 );
+export const filterPasskey = filterFactory(
+    async () => await db.getData('passkeys'),
+    passkeySchema
+);
 export const updatePasskey = updateFactory(
     async () => await db.getData('passkeys'),
     async (d) => await db.push('passkeys', d),
     passkeySchema
 );
 export const pushPasskey = pushFactory(
+    async () => await db.getData('passkeys'),
+    async (d) => await db.push('passkeys', d),
+    passkeySchema
+);
+export const deletePasskey = deleteFactory(
     async () => await db.getData('passkeys'),
     async (d) => await db.push('passkeys', d),
     passkeySchema

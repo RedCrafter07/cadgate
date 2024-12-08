@@ -3,6 +3,7 @@ import chalk from 'npm:chalk';
 import proxy from './routes/proxy.ts';
 import redirect from './routes/redirect.ts';
 import user from './routes/user.ts';
+import webauthn from './routes/webAuthn.ts';
 
 const PORT = Number(Deno.env.get('PORT')) || 2000;
 
@@ -24,6 +25,7 @@ const router = new Router();
 router.use('/proxy', proxy.routes(), proxy.allowedMethods());
 router.use('/redirect', redirect.routes(), redirect.allowedMethods());
 router.use('/user', user.routes(), user.allowedMethods());
+router.use('/webauthn', webauthn.routes(), webauthn.allowedMethods());
 
 app.use(router.routes());
 app.use(router.allowedMethods());
