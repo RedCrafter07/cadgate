@@ -18,6 +18,7 @@ router.get('/', async ({ request, response }) => {
         return;
     }
 
+    // deno-lint-ignore no-explicit-any
     const user = await findUser(params as any);
 
     if (user === false) {

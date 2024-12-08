@@ -16,11 +16,6 @@ const router = new Router();
 // - User management & permissions
 // - System Settings
 // - Caddy Config Generation
-// - 2FA/WebAuthn
-
-// Done:
-// - Proxy Settings
-// - Redirect Settings
 
 router.use('/proxy', proxy.routes(), proxy.allowedMethods());
 router.use('/redirect', redirect.routes(), redirect.allowedMethods());

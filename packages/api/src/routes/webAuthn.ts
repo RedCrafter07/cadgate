@@ -123,6 +123,7 @@ router.post('/register', async ({ request, response }) => {
         } else {
             response.body = { verified: false };
         }
+        // deno-lint-ignore no-explicit-any
     } catch (error: any) {
         console.log(error);
         response.status = 500;
@@ -184,6 +185,7 @@ router.post('/login', async ({ request, response }) => {
             },
             requireUserVerification: false,
         });
+        // deno-lint-ignore no-explicit-any
     } catch (error: any) {
         console.error(error);
         response.status = 400;
