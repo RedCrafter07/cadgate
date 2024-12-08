@@ -19,7 +19,7 @@
 
     function change() {
         if (props.onChange) props.onChange(!checked);
-        if (props.checked === undefined) checked = !checked;
+        checked = !checked;
     }
 </script>
 
