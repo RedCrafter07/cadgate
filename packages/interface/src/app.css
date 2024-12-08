@@ -25,6 +25,10 @@ textarea {
     @apply border-2 border-lime-600 text-lime-600 hover:text-white hover:bg-lime-600;
 }
 
+.btn.btn-error.btn-outline:not(:disabled) {
+    @apply border-2 border-red-500 text-red-500 hover:text-white hover:bg-red-500;
+}
+
 .btn {
     @apply px-4 py-2 rounded-xl transition-all duration-100 flex flex-row gap-2;
 }
