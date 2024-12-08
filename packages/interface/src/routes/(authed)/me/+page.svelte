@@ -8,7 +8,9 @@
     import IconLogout from '~icons/tabler/logout';
     import IconMail from '~icons/tabler/mail';
     import IconLock from '~icons/tabler/lock';
+    import IconX from '~icons/tabler/x';
     import { goto } from '$app/navigation';
+    import { fade } from 'svelte/transition';
 
     let { data, form }: { data: PageData; form: ActionData } = $props();
 
@@ -66,6 +68,7 @@
 
 {#snippet deleteKeyPopup(id: string | null)}
     <div
+        transition:fade={{ duration: 150 }}
         class="fixed top-0 left-0 w-full h-full bg-slate-900 bg-opacity-75 backdrop-blur-sm flex"
     >
         <!-- svelte-ignore a11y_click_events_have_key_events -->
@@ -77,11 +80,22 @@
             }}
         ></div>
         <div
-            class="w-3/4 lg:w-1/2 h-max rounded-xl bg-slate-800 p-8 m-auto flex flex-col gap-4 z-20"
+            class="bg-slate-900 lg:rounded-xl p-8 w-full h-full lg:w-3/4 lg:h-max m-auto border-slate-600 lg:border drop-shadow-2xl flex flex-col gap-4 z-20"
         >
-            <h1 class="text-3xl">
-                Delete key {data.passkeys.find((k) => k.id === id)!.name}?
-            </h1>
+            <div class="flex flex-row justify-between">
+                <h1 class="text-3xl">
+                    Delete key {data.passkeys.find((k) => k.id === id)!.name}?
+                </h1>
+
+                <button
+                    class="btn btn-square"
+                    onclick={() => {
+                        deleteID = null;
+                    }}
+                >
+                    <IconX class="text-xl" />
+                </button>
+            </div>
             <h3 class="text-xl opacity-70">
                 This action is not irreversible. You'll have to manually delete
                 the passkey from your device afterwards.
