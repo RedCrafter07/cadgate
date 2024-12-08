@@ -54,21 +54,22 @@
         {/if}
 
         <div class="lg:ml-auto">
-            <button
+            <a
+                href="/me"
                 class="btn"
-                title="Sign out"
-                onclick={() => {
+                title="Settings"
+                oncontextmenu={(e) => {
+                    e.preventDefault();
                     goto('/logout');
                 }}
             >
-                <span class="hidden lg:flex flex-row gap-2">
-                    <IconUser class="text-xl" />
-                    <p>Logged in as {user.name}</p>
+                <span class="flex flex-row gap-2">
+                    <IconUser class="lg:text-xl text-lg opacity-90" />
+                    <span class="hidden lg:block">
+                        <p>Logged in as {user.name}</p>
+                    </span>
                 </span>
-                <span class="block lg:hidden">
-                    <IconLogout class="text-xl" />
-                </span>
-            </button>
+            </a>
         </div>
     </div>
     <!-- Desktop spacer -->

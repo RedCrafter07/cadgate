@@ -1,8 +1,6 @@
 import getUser from '$lib/api/functions/user/get.js';
 import { validate } from '$lib/jwt/index.js';
-import type { User } from '$lib/schemas/user.js';
 import { redirect } from '@sveltejs/kit';
-import axios from 'axios';
 import moment from 'moment';
 
 export const load = async ({ cookies, route }) => {
