@@ -15,9 +15,9 @@
     <title>Not found | Cadgate</title>
 </svelte:head>
 
-<div class="w-full h-screen flex items-center justify-center">
+<div class="w-full h-screen flex items-center">
     <div
-        class="w-3/4 h-3/4 rounded-xl bg-slate-800 flex flex-col p-8 items-center justify-center"
+        class="w-3/4 h-3/4 rounded-xl bg-slate-800 flex flex-col p-8 items-center"
     >
         <div>
             <h1 class="text-5xl">Wow, you found an easter egg!</h1>

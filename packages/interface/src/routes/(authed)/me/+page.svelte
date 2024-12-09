@@ -104,7 +104,7 @@
             <form action="?/delkey" method="post" use:enhance>
                 <input type="text" name="id" class="hidden" value={id} />
 
-                <button class="btn btn-outline btn-error w-full justify-center"
+                <button class="btn btn-outline btn-error w-full"
                     >Yeetus!</button
                 >
             </form>

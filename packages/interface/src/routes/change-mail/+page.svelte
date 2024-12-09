@@ -18,7 +18,7 @@
 
     <form class="flex flex-col w-full gap-4" method="post" use:enhance>
         <input type="email" name="mail" placeholder="New Mail" required />
-        <button class="btn btn-success btn-outline justify-center">
+        <button class="btn btn-success btn-outline">
             <span class="text-xl">Change it!</span>
         </button>
     </form>

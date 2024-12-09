@@ -42,7 +42,7 @@
             required
         />
         <button
-            class="btn btn-success btn-outline justify-center"
+            class="btn btn-success btn-outline"
             disabled={password1 !== password2 || password1.length < 1}
         >
             <span class="text-xl">Change it!</span>

@@ -87,7 +87,7 @@
                 </form>
 
                 <form action="?/passkey" method="post" use:enhance>
-                    <button class="btn justify-center w-full">
+                    <button class="btn w-full">
                         Or use a passkey instead
                     </button>
                 </form>
