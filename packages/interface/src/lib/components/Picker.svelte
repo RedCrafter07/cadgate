@@ -1,6 +1,8 @@
 <script lang="ts">
     import IconX from '~icons/tabler/x';
-    import Input from './Input.svelte';
+    import { fly } from 'svelte/transition';
+    import { circIn, circOut } from 'svelte/easing';
+    import { flip } from 'svelte/animate';
     let currentElement = $state('');
     let {
         name,
@@ -34,13 +36,18 @@
         <p>{label}</p>
     {/if}
 
-    <div class="flex flex-row gap-2">
-        {#each elements as element, i}
+    <div class="flex flex-row gap-2 h-10">
+        {#each elements as element, i (element)}
             <button
                 onclick={() => {
-                    elements.splice(i, 1);
+                    setTimeout(() => {
+                        elements = elements.filter((_, index) => index !== i);
+                    }, 150);
                 }}
                 class="btn btn-bg"
+                animate:flip={{ delay: 100, duration: 150 }}
+                in:fly={{ y: 50, duration: 150, easing: circOut }}
+                out:fly={{ y: -50, duration: 150, easing: circIn }}
             >
                 <p>{element}</p>
                 <IconX class="text-lg" />
