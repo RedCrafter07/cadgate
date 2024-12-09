@@ -25,7 +25,8 @@
 
 <button
     class="flex flex-row gap-2 w-max"
-    onclick={() => {
+    onclick={(e) => {
+        e.preventDefault();
         change();
     }}
 >
