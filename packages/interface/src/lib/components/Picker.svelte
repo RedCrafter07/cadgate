@@ -34,7 +34,7 @@
         <p>{label}</p>
     {/if}
 
-    <div class="flex flex-row gap-4">
+    <div class="flex flex-row gap-2">
         {#each elements as element, i}
             <button
                 onclick={() => {
