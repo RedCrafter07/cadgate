@@ -58,7 +58,8 @@
                 animate:flip={{ delay: 100, duration: 150 }}
             >
                 <button
-                    onclick={() => {
+                    onclick={(e) => {
+                        e.preventDefault();
                         elements = elements.filter((_, index) => index !== i);
                     }}
                     class="btn btn-bg overflow-hidden group"
