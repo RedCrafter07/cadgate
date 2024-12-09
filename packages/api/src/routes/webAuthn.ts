@@ -20,6 +20,7 @@ import { z } from 'npm:zod';
 import { Buffer } from 'node:buffer';
 import moment from 'npm:moment';
 import { AuthenticationResponseJSON } from 'jsr:@simplewebauthn/types@12';
+import { decodeKey, encodeKey } from '@/api/src/util/keyEncoding.ts';
 
 const origin = 'http://localhost:5173';
 const rpName = `Cadgate @ ${origin}`;
@@ -109,6 +110,7 @@ router.post('/register', async ({ request, response }) => {
 
             const passkey: DbPasskey = {
                 ...credential,
+                publicKey: encodeKey(credential.publicKey),
                 name,
                 userID,
                 backedUp: credentialBackedUp,
@@ -179,7 +181,7 @@ router.post('/login', async ({ request, response }) => {
             expectedRPID: rpID,
             credential: {
                 id: passkey.id,
-                publicKey: passkey.publicKey,
+                publicKey: decodeKey(passkey.publicKey),
                 counter: passkey.counter,
                 transports: passkey.transports,
             },
