@@ -39,6 +39,11 @@ export const pushProxy = pushFactory(
     async (d) => await db.push('proxyEntries', d),
     proxySchema
 );
+export const deleteProxy = deleteFactory(
+    async () => await db.getData('proxyEntries'),
+    async (d) => await db.push('proxyEntries', d),
+    proxySchema
+);
 
 export const findRedirect = finderFactory(
     async () => await db.getData('redirectEntries'),

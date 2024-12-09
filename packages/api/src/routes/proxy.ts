@@ -1,6 +1,7 @@
 import { Router } from 'jsr:@oak/oak';
 import {
     db,
+    deleteProxy,
     findProxy,
     proxySchema,
     pushProxy,
@@ -57,7 +58,19 @@ const router = new Router()
 
         const { data } = validation;
 
-        const success = await updateProxy({ id }, data);
+        const success = await updateProxy({ id }, { ...data, id });
+
+        if (!success) {
+            response.status = 500;
+            return;
+        }
+
+        response.status = 200;
+    })
+    .delete('/:id', async ({ params, response }) => {
+        const { id } = params;
+
+        const success = await deleteProxy({ id });
 
         if (!success) {
             response.status = 500;
