@@ -2,49 +2,34 @@
     import IconCheck from '~icons/tabler/check';
     import IconX from '~icons/tabler/x';
     import IconPlus from '~icons/tabler/plus';
-    import { z } from 'zod';
-    import { proxyEntries } from '$lib/schemas/proxyEntries.js';
+    import IconEdit from '~icons/tabler/edit';
+    import IconTrash from '~icons/tabler/trash';
+    import type { proxyEntry } from '$lib/schemas/proxyEntries.js';
     import Switch from '$lib/components/Switch.svelte';
     import { fade } from 'svelte/transition';
+    import Picker from '$lib/components/Picker.svelte';
+    import Input from '$lib/components/Input.svelte';
+    import { enhance } from '$app/forms';
 
-    type proxyEntry = z.infer<typeof proxyEntries.element>;
-
-    const { data } = $props();
+    const { data, form } = $props();
 
     const { proxies } = $derived(data);
+
+    let popupID = $state<string | null>(null);
+    let popupData: proxyEntry | {} | null = $derived(
+        popupID === 'new' ? {} : proxies.find((p) => p.id === popupID) || null,
+    );
+
+    $effect(() => {
+        if (form?.success) {
+            popupID = null;
+        }
+    });
 </script>
 
 <svelte:head>
     <title>Proxy Settings | Cadgate</title>
 </svelte:head>
-
-{#snippet Input({
-    name,
-    placeholder,
-    label,
-    value,
-    onInput,
-}: {
-    name: string;
-    label?: string;
-    placeholder?: string;
-    value?: string;
-    onInput?: (t: string) => void;
-})}
-    <div class="flex flex-col gap-2">
-        {#if label}<p>{label}</p>{/if}
-        <input
-            type="text"
-            class="w-full"
-            {name}
-            {placeholder}
-            {value}
-            oninput={(e) => {
-                if (onInput) onInput(e.currentTarget.value);
-            }}
-        />
-    </div>
-{/snippet}
 
 {#snippet popup(input: Partial<proxyEntry>)}
     <div
@@ -52,35 +37,79 @@
         class="fixed top-0 left-0 w-full h-full bg-slate-900 bg-opacity-25 backdrop-blur-md flex"
     >
         <div
-            class="bg-slate-900 lg:rounded-xl p-8 w-full h-full lg:w-3/4 lg:h-max m-auto border-slate-600 lg:border drop-shadow-2xl flex flex-col gap-4"
+            class="bg-slate-900 lg:rounded-xl p-8 w-full h-full lg:w-3/4 lg:h-max m-auto border-slate-600 lg:border drop-shadow-2xl flex flex-col gap-6"
         >
             <div class="flex flex-row justify-between">
                 <h1 class="text-3xl">Proxy entry</h1>
-                <button class="btn btn-square" onclick={() => {}}>
+                <button
+                    class="btn btn-square"
+                    onclick={() => {
+                        popupID = null;
+                    }}
+                >
                     <IconX class="text-xl" />
                 </button>
             </div>
 
-            {@render Input({
-                name: 'name',
-                placeholder: 'My website',
-                label: 'Display Name',
-            })}
+            <form
+                action={`?/update`}
+                method="post"
+                use:enhance
+                class="flex flex-col gap-6"
+            >
+                <input type="text" name="id" class="hidden" value={popupID} />
 
-            {@render Input({
-                name: 'to',
-                placeholder: 'localhost:4242',
-                label: 'Forward Host',
-            })}
+                <Input
+                    name="name"
+                    placeholder="My website"
+                    label="Display name"
+                    value={input.name}
+                />
 
-            <Switch name="enforceHttps" label="Enforce HTTPS" />
-            <Switch name="enforceHttps" label="Cloudflare Integration" />
+                <Picker
+                    label="Hosts"
+                    name="hosts"
+                    value={input.hosts}
+                    placeholder="mycoolsite.example.com"
+                />
+
+                <Input
+                    name="to"
+                    placeholder="http://localhost:4242"
+                    label="Forward Host"
+                    value={input.to}
+                />
+
+                <Switch
+                    name="enforceHttps"
+                    label="Enforce HTTPS"
+                    checked={input.enforceHttps}
+                />
+                <Switch
+                    name="cloudflare"
+                    label="Cloudflare Integration"
+                    checked={input.cloudflare}
+                />
+
+                <button class="btn btn-outline btn-success">
+                    {#if popupID === 'new'}
+                        Add new Proxy!
+                    {:else}
+                        Update Proxy!
+                    {/if}
+                </button>
+            </form>
         </div>
     </div>
 {/snippet}
 
 {#snippet createEntry()}
-    <button class="btn btn-success btn-outline">
+    <button
+        class="btn btn-success btn-outline"
+        onclick={() => {
+            popupID = 'new';
+        }}
+    >
         <IconPlus class="text-2xl" />
         <p>Add entry</p>
     </button>
@@ -94,11 +123,24 @@
     {/if}
 {/snippet}
 
-{@render popup({})}
+{#if popupID && popupData}
+    {@render popup(popupData)}
+{/if}
 
 <div class="my-4"></div>
 
 <div class="p-3 rounded-xl bg-slate-900">
+    <div class="flex flex-row items-center justify-between mb-2">
+        <h3 class="text-xl">Proxies</h3>
+        <button
+            class="btn btn-square"
+            onclick={() => {
+                popupID = 'new';
+            }}
+        >
+            <IconPlus class="text-xl" />
+        </button>
+    </div>
     <table class="w-full table-auto">
         <thead>
             <tr>
@@ -107,6 +149,7 @@
                 <td>Hosts</td>
                 <td>Enforce HTTPS</td>
                 <td>Cloudflare integration</td>
+                <td>Actions</td>
             </tr>
         </thead>
         <tbody>
@@ -118,7 +161,7 @@
 
                     <td class="flex flex-row gap-2">
                         {#each proxy.hosts as host}
-                            <div class="p-1 rounded-xl bg-slate-800">
+                            <div class="px-2 py-1 rounded-xl bg-slate-800">
                                 {host}
                             </div>
                         {/each}
@@ -130,10 +173,34 @@
                     <td>
                         {@render checkIcons(proxy.cloudflare)}
                     </td>
+
+                    <td>
+                        <div class="flex flex-row gap-2 items-center">
+                            <button
+                                class="btn btn-square"
+                                onclick={() => {
+                                    popupID = proxy.id;
+                                }}
+                            >
+                                <IconEdit class="text-lg" />
+                            </button>
+                            <form action="?/delete" method="post" use:enhance>
+                                <input
+                                    type="text"
+                                    class="hidden"
+                                    name="id"
+                                    value={proxy.id}
+                                />
+                                <button class="btn btn-square">
+                                    <IconTrash class="text-lg" />
+                                </button>
+                            </form>
+                        </div>
+                    </td>
                 </tr>
             {:else}
                 <tr>
-                    <td colspan="5" class="text-center">
+                    <td colspan="6" class="text-center">
                         <div
                             class="w-full flex flex-col gap-4 my-4 items-center justify-center"
                         >
