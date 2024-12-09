@@ -41,6 +41,10 @@ textarea {
     @apply px-4 py-2 rounded-xl transition-all duration-100 flex flex-row gap-2;
 }
 
+.btn.btn-bg:not(:disabled) {
+    @apply bg-slate-800 hover:bg-slate-700;
+}
+
 .btn:not(:disabled) {
     @apply hover:bg-slate-50 hover:bg-opacity-10 active:scale-90 items-center;
 }
