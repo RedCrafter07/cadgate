@@ -36,22 +36,35 @@
         <p>{label}</p>
     {/if}
 
-    <div class="flex flex-row gap-2 h-10">
+    <div
+        class="flex flex-row gap-2 transition-all duration-150"
+        class:h-10={elements.length > 0}
+        class:delay-200={elements.length === 0}
+        class:h-0={elements.length === 0}
+    >
         {#each elements as element, i (element)}
-            <button
-                onclick={() => {
-                    setTimeout(() => {
-                        elements = elements.filter((_, index) => index !== i);
-                    }, 150);
+            <div
+                in:fly={{
+                    y: 50,
+                    delay: elements.length === 1 ? 150 : 0,
+                    duration: 150,
+                    easing: circOut,
                 }}
-                class="btn btn-bg"
-                animate:flip={{ delay: 100, duration: 150 }}
-                in:fly={{ y: 50, duration: 150, easing: circOut }}
                 out:fly={{ y: -50, duration: 150, easing: circIn }}
+                animate:flip={{ delay: 100, duration: 150 }}
             >
-                <p>{element}</p>
-                <IconX class="text-lg" />
-            </button>
+                <button
+                    onclick={() => {
+                        elements = elements.filter((_, index) => index !== i);
+                    }}
+                    class="btn btn-bg overflow-hidden group"
+                >
+                    <p>{element}</p>
+                    <IconX
+                        class="text-lg opacity-50 group-hover:opacity-90 transition-opacity"
+                    />
+                </button>
+            </div>
         {/each}
     </div>
 
@@ -60,7 +73,8 @@
             e.preventDefault();
             if (currentElement.length < 1) return;
 
-            elements.push(currentElement);
+            if (!elements.includes(currentElement))
+                elements.push(currentElement);
             currentElement = '';
         }}
     >
