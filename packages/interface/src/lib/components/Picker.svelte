@@ -21,6 +21,10 @@
     let elements = $state<string[]>([]);
 
     $effect(() => {
+        if (value) elements = value;
+    });
+
+    $effect(() => {
         if (onChange) onChange(elements);
     });
 

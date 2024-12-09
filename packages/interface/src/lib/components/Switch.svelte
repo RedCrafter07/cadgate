@@ -30,7 +30,7 @@
         change();
     }}
 >
-    <input type="checkbox" class="hidden" {checked} />
+    <input type="checkbox" class="hidden" {checked} name={props.name} />
     <div
         class="relative p-1 rounded-full w-10 h-6 transition-colors duration-150"
         class:bg-slate-600={!checked}
