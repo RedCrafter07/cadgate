@@ -165,6 +165,7 @@ if (!configData.isSetUp) {
                 passwordHash,
                 requiresNewEmail: true,
                 requiresNewPassword: true,
+                challenge: null,
             },
         ];
 
