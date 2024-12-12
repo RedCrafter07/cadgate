@@ -31,5 +31,7 @@ export function deleteFactory<
         data.splice(index, 1);
 
         await write(data);
+
+        return true;
     };
 }
