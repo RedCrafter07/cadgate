@@ -130,6 +130,16 @@
 <div class="my-4"></div>
 
 <div class="p-3 rounded-xl bg-slate-900">
+    {#if form?.message}
+        <div
+            class="p-2 w-full rounded-xl"
+            class:bg-green-500={form.success}
+            class:bg-red-500={!form.success}
+        >
+            {form.message}
+        </div>
+    {/if}
+
     <div class="flex flex-row items-center justify-between mb-2">
         <h3 class="text-xl">Proxies</h3>
         <button
