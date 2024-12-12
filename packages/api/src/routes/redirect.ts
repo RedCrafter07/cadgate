@@ -5,6 +5,7 @@ import {
     redirectSchema,
     pushRedirect,
     updateRedirect,
+    deleteRedirect,
 } from '@/api/src/util/db.ts';
 
 const router = new Router()
@@ -58,6 +59,18 @@ const router = new Router()
         const { data } = validation;
 
         const success = await updateRedirect({ id }, data);
+
+        if (!success) {
+            response.status = 500;
+            return;
+        }
+
+        response.status = 200;
+    })
+    .delete('/:id', async ({ params, response }) => {
+        const { id } = params;
+
+        const success = await deleteRedirect({ id });
 
         if (!success) {
             response.status = 500;

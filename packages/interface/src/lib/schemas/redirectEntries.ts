@@ -23,3 +23,5 @@ export const redirectEntries = z
         preservePath: z.boolean().default(false),
     })
     .array();
+
+export type redirectEntry = z.infer<typeof redirectEntries.element>;

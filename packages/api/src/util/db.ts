@@ -59,6 +59,11 @@ export const pushRedirect = pushFactory(
     async (d) => await db.push('redirectEntries', d),
     redirectSchema
 );
+export const deleteRedirect = deleteFactory(
+    async () => await db.getData('redirectEntries'),
+    async (d) => await db.push('redirectEntries', d),
+    redirectSchema
+);
 
 export const findPasskey = finderFactory(
     async () => await db.getData('passkeys'),
