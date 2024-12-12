@@ -41,7 +41,7 @@ export const actions = {
 
         return {
             message: success
-                ? 'Successfully added Proxy!'
+                ? 'Successfully deleted Proxy!'
                 : 'Internal server error',
             success,
         };
@@ -115,7 +115,7 @@ export const actions = {
 
             return {
                 message: success
-                    ? 'Successfully added Proxy!'
+                    ? 'Successfully updated Proxy!'
                     : 'Internal server error',
                 success,
             };
