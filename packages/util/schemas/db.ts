@@ -5,10 +5,14 @@ const dbSchema = z.object({
         .object({
             hosts: z
                 .string()
+                .url()
                 .array()
-                .min(1)
+                .default([])
                 .describe('The hosts proxied to the "To" entry'),
-            to: z.string().describe('The location the hosts are proxied to'),
+            to: z
+                .string()
+                .url()
+                .describe('The location the hosts are proxied to'),
             enforceHttps: z
                 .boolean()
                 .default(false)
@@ -44,10 +48,10 @@ const dbSchema = z.object({
                 .describe('Enforce HTTPS to this endpoint'),
             hosts: z
                 .string()
-                .min(1)
                 .array()
+                .default([])
                 .describe('The hosts redirected to the "To" entry'),
-            to: z.string(),
+            to: z.string().url(),
             preservePath: z.boolean().default(false),
         })
         .array(),

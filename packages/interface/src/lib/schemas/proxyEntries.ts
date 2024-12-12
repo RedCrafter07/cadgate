@@ -4,10 +4,11 @@ const proxyEntries = z
     .object({
         hosts: z
             .string()
+            .url()
             .array()
-            .min(1)
+            .default([])
             .describe('The hosts proxied to the "To" entry'),
-        to: z.string().describe('The location the hosts are proxied to'),
+        to: z.string().url().describe('The location the hosts are proxied to'),
         enforceHttps: z
             .boolean()
             .default(false)

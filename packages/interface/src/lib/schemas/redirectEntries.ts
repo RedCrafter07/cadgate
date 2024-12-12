@@ -16,10 +16,10 @@ export const redirectEntries = z
             .describe('Enforce HTTPS to this endpoint'),
         hosts: z
             .string()
-            .min(1)
             .array()
+            .default([])
             .describe('The hosts redirected to the "To" entry'),
-        to: z.string(),
+        to: z.string().url(),
         preservePath: z.boolean().default(false),
     })
     .array();
