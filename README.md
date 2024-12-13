@@ -20,3 +20,9 @@ _Project is not finished yet. You will be able to run the installer in order to 
 -   [ ] User management (incl. perms)
 -   [ ] Importing existing Caddyfiles
 -   [ ] _SQLite as DB (optional)_
+
+## Acknowledgements
+
+-   [Tabler Icons](https://tabler.io/icons) for the favicon & icons used in this project
+-   [SvelteKit](https://kit.svelte.dev) for the frontend framework
+-   [Deno](https://deno.land) for the runtime
