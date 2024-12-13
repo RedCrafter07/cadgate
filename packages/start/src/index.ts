@@ -4,6 +4,8 @@ import * as YAML from '@std/yaml';
 import { Database } from '@/util/db/index.ts';
 import { dbSchema } from '@/util/schemas/db.ts';
 import { hashPassword } from '@/util/functions/hashPassword.ts';
+import path from 'node:path';
+import { isProcessRunning } from './util/isProcessRunning.ts';
 
 const logger = new Logger();
 
@@ -12,11 +14,22 @@ logger.log('======= Welcome to cadgate! =======');
 const CONFIG_PATH = Deno.env.get('CONFIG_PATH')!;
 const DATABASE_PATH = Deno.env.get('DATABASE_PATH')!;
 const INIT_FILES = Boolean(Deno.env.get('INIT_FILES'));
+const INTERFACE_PATH = Deno.env.get('INTERFACE_PATH')!;
+const DATA_PATH = Deno.env.get('DATA_PATH')!;
+const API_PATH = Deno.env.get('API_PATH')!;
+const JWT_SECRET = Deno.env.get('JWT_SECRET')!;
 const DEFAULT_PASSWORD = Deno.env.get('DEFAULT_PASSWORD') ?? 'ch4ngem3';
 // TODO: Add env variables for enabling specific logs
 // const ENABLE_CADDY_LOGS = Boolean(Deno.env.get('ENABLE_CADDY_LOGS'));
 
-const requiredEnvVariables = ['CONFIG_PATH', 'DATABASE_PATH'];
+const requiredEnvVariables = [
+    'CONFIG_PATH',
+    'DATABASE_PATH',
+    'INTERFACE_PATH',
+    'API_PATH',
+    'JWT_SECRET',
+    'DATA_PATH',
+];
 
 const missingVariables = requiredEnvVariables
     .map((e) => ({ name: e, exists: !!Deno.env.get(e) }))
@@ -33,14 +46,51 @@ if (missingVariables.length > 0) {
     Deno.exit(1);
 }
 
+const API_PORT = 2000;
+const API_URL = `http://localhost:${API_PORT}`;
+
 logger.info('Running preflight checks');
 
+const API_DIR = path.resolve(path.dirname(API_PATH));
+const API_FILE = path.relative(API_DIR, API_PATH);
+
+const processEnv = {
+    DATABASE_PATH,
+    CONFIG_PATH,
+    JWT_SECRET,
+};
+
 const cmds = {
-    start: new Deno.Command('caddy', {
-        args: ['run'],
+    startCaddy: (...args: string[]) =>
+        new Deno.Command('caddy', {
+            args: ['run', ...args],
+            stdin: 'piped',
+            stdout: 'piped',
+            stderr: 'piped',
+        }),
+    startAPI: new Deno.Command(Deno.execPath(), {
+        args: ['run', '-A', '--watch', API_FILE],
         stdin: 'piped',
         stdout: 'piped',
         stderr: 'piped',
+        clearEnv: true,
+        env: {
+            ...processEnv,
+            PORT: '2000',
+        },
+        cwd: API_DIR,
+    }),
+    startInterface: new Deno.Command(Deno.execPath(), {
+        args: ['run', '-A', 'dev:vite'],
+        stdin: 'piped',
+        stdout: 'piped',
+        stderr: 'piped',
+        clearEnv: true,
+        env: {
+            ...processEnv,
+            API_URL,
+        },
+        cwd: INTERFACE_PATH,
     }),
 };
 
@@ -55,11 +105,11 @@ try {
 
     file.close();
 
-    content = await Deno.readTextFileSync(CONFIG_PATH);
+    content = await Deno.readTextFile(CONFIG_PATH);
 } catch {
     if (INIT_FILES) {
         const fileContent = YAML.stringify({ isSetUp: false });
-        await Deno.writeTextFileSync(CONFIG_PATH, fileContent);
+        await Deno.writeTextFile(CONFIG_PATH, fileContent);
 
         content = fileContent;
     } else {
@@ -105,7 +155,7 @@ logger.indent().log('Rewriting content...');
 
 const configData = validation.data;
 
-await Deno.writeTextFileSync(CONFIG_PATH, YAML.stringify(configData));
+await Deno.writeTextFile(CONFIG_PATH, YAML.stringify(configData));
 
 logger.info('Checking database...');
 
@@ -117,7 +167,7 @@ try {
     file.close();
 } catch {
     if (INIT_FILES) {
-        await Deno.writeTextFileSync(
+        await Deno.writeTextFile(
             DATABASE_PATH,
             JSON.stringify({ proxyEntries: [], users: [] })
         );
@@ -181,22 +231,54 @@ if (!configData.isSetUp) {
     }
 }
 
+const additionalCaddyArgs: string[] = [];
+
 logger.info('Preparing caddy configuration..');
+logger.indent().info('Checking for cached configuration...');
+
+try {
+    await Deno.mkdir(DATA_PATH, { recursive: true });
+    const configPath = path.join(DATA_PATH, 'caddy.json');
+    await Deno.open(configPath);
+
+    additionalCaddyArgs.push('--config', configPath);
+} catch {
+    logger
+        .indent()
+        .warn('Config file not found. Using default config for now.');
+}
 
 logger.info('Starting caddy...');
-
-const caddy = cmds.start.spawn();
+const caddy = cmds.startCaddy(...additionalCaddyArgs).spawn();
 caddy.ref();
+logger.indent().success('Caddy has been started successfully!');
 
-logger.info('Caddy has been started!');
+logger.info('Starting API...');
+const api = cmds.startAPI.spawn();
+api.ref();
+logger.indent().success('API has been started successfully!');
+
+logger.info('Starting interface...');
+const webInterface = cmds.startInterface.spawn();
+webInterface.ref();
+logger.indent().success('Interface has been started successfully!');
 
 const stopHandler = async () => {
     logger.warn('Exit detected!');
 
+    logger.indent().info('Stopping interface...');
+
+    if (await isProcessRunning(webInterface)) webInterface.kill('SIGTERM');
+    await webInterface.output();
+
+    logger.indent().info('Stopping API...');
+
+    if (await isProcessRunning(api)) api.kill('SIGTERM');
+    await api.output();
+
     logger.indent().info('Stopping caddy...');
 
-    caddy.kill('SIGTERM');
-
+    if (await isProcessRunning(caddy)) caddy.kill('SIGTERM');
     await caddy.output();
 
     logger.indent().log('Everything has been successfully stopped. Goodbye!');
