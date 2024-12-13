@@ -77,8 +77,8 @@
 
                 <Input
                     name="to"
-                    placeholder="http://localhost:4242"
-                    label="Forward Host"
+                    placeholder="https://rickroll.link"
+                    label="Redirect to"
                     value={input.to}
                 />
 
@@ -95,9 +95,9 @@
 
                 <button class="btn btn-outline btn-success">
                     {#if popupID === 'new'}
-                        Add new Proxy!
+                        Add new Redirect!
                     {:else}
-                        Update Proxy!
+                        Update Redirect!
                     {/if}
                 </button>
             </form>
