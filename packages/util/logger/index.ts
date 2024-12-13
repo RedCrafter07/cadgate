@@ -1,3 +1,4 @@
+// deno-lint-ignore-file no-explicit-any
 import chalk from 'npm:chalk';
 
 type ErrorLevel = 'CRITICAL' | 'ERROR' | 'WARN';
