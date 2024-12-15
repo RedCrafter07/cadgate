@@ -2,6 +2,7 @@ import {
     redirectEntries,
     type redirectEntry,
 } from '$lib/schemas/redirectEntries';
+import { AxiosError } from 'axios';
 import api from '../../api';
 
 export default async function updateRedirect(input: redirectEntry) {
@@ -12,10 +13,13 @@ export default async function updateRedirect(input: redirectEntry) {
     const { data } = validation;
 
     try {
-        const res = await api.put(`/proxy/${input.id}`, data);
+        const res = await api.put(`/redirect/${input.id}`, data);
 
         if (res.status === 200) return true;
     } catch (error) {
+        if (error instanceof AxiosError) {
+            console.error(error.response);
+        }
         return false;
     }
 
