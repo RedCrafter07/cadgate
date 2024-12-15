@@ -7,6 +7,7 @@ import {
     pushProxy,
     updateProxy,
 } from '@/api/src/util/db.ts';
+import * as caddyAPI from '@/util/caddy.ts';
 
 const router = new Router()
     .get('/', async ({ response: res }) => {
@@ -33,6 +34,8 @@ const router = new Router()
             response.status = 500;
             return;
         }
+
+        await caddyAPI.createProxyRoute(data);
 
         response.status = 200;
     })
@@ -65,6 +68,15 @@ const router = new Router()
             return;
         }
 
+        const proxy = await findProxy({ id });
+
+        if (!proxy) {
+            response.status = 500;
+            return;
+        }
+
+        await caddyAPI.updateProxyRoute(proxy);
+
         response.status = 200;
     })
     .delete('/:id', async ({ params, response }) => {
@@ -76,6 +88,8 @@ const router = new Router()
             response.status = 500;
             return;
         }
+
+        await caddyAPI.deleteProxyRoute(id);
 
         response.status = 200;
     });
