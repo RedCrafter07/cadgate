@@ -7,6 +7,7 @@ import {
     updateRedirect,
     deleteRedirect,
 } from '@/api/src/util/db.ts';
+import * as caddyAPI from '@/util/caddy.ts';
 
 const router = new Router()
     .get('/', async ({ response: res }) => {
@@ -33,6 +34,8 @@ const router = new Router()
             response.status = 500;
             return;
         }
+
+        await caddyAPI.createRedirectRoute(data);
 
         response.status = 200;
     })
@@ -65,6 +68,15 @@ const router = new Router()
             return;
         }
 
+        const redirect = await findRedirect({ id });
+
+        if (!redirect) {
+            response.status = 500;
+            return;
+        }
+
+        await caddyAPI.updateRedirectRoute(redirect);
+
         response.status = 200;
     })
     .delete('/:id', async ({ params, response }) => {
@@ -76,6 +88,8 @@ const router = new Router()
             response.status = 500;
             return;
         }
+
+        await caddyAPI.deleteRedirectRoute(id);
 
         response.status = 200;
     });
