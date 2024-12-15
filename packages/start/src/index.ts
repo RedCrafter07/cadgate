@@ -298,4 +298,14 @@ if (result == null) {
     await caddyAPI.resetConfig();
     await caddyAPI.initialize();
     logger.indent().success('Caddy has been initialized!');
+    logger.indent().info('Writing from database...');
+
+    const proxyEntries = await db.getData('proxyEntries');
+    const redirectEntries = await db.getData('redirectEntries');
+
+    await caddyAPI.createFromConfig({ proxyEntries, redirectEntries });
+
+    logger.indent().success('Success!');
 }
+
+logger.success('===== Initialization complete! =====');
