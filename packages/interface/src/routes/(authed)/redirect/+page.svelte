@@ -30,7 +30,7 @@
 </script>
 
 <svelte:head>
-    <title>Proxy Settings | Cadgate</title>
+    <title>Redirect Settings | Cadgate</title>
 </svelte:head>
 
 {#snippet popup(input: Partial<redirectEntry>)}
@@ -42,7 +42,7 @@
             class="bg-slate-900 lg:rounded-xl p-8 w-full h-full lg:w-3/4 lg:h-max m-auto border-slate-600 lg:border drop-shadow-2xl flex flex-col gap-6"
         >
             <div class="flex flex-row justify-between">
-                <h1 class="text-3xl">Proxy entry</h1>
+                <h1 class="text-3xl">Redirect entry</h1>
                 <button
                     class="btn btn-square"
                     onclick={() => {
@@ -84,7 +84,7 @@
 
                 <Switch
                     name="preservePath"
-                    label="Enforce HTTPS"
+                    label="Preserve path"
                     checked={input.preservePath}
                 />
                 <Switch

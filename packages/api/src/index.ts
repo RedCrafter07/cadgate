@@ -15,7 +15,6 @@ const router = new Router();
 // - Audit Logging
 // - User management & permissions
 // - System Settings
-// - Caddy Config Generation
 
 router.use('/proxy', proxy.routes(), proxy.allowedMethods());
 router.use('/redirect', redirect.routes(), redirect.allowedMethods());
