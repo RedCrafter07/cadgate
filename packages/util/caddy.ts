@@ -19,16 +19,18 @@ export async function getAll() {
     return res.data;
 }
 
-export async function initialize() {
+export async function initialize(
+    ports: { https: number; http: number } = { https: 443, http: 80 }
+) {
     const caddyData = {
         cadgate: {
             '@id': 'cadgate.main',
-            listen: [':443'],
+            listen: [`:${ports.https}`],
             routes: [],
         },
         cadgateHttpFallback: {
             '@id': 'cadgate.http',
-            listen: [':80'],
+            listen: [`:${ports.http}`],
             routes: [],
         },
     };
@@ -36,7 +38,7 @@ export async function initialize() {
     try {
         await caddy.put('/config/apps/http/servers', caddyData);
     } catch (error) {
-        console.log(error);
+        console.error('Error while initializing:', error);
     }
 }
 
@@ -225,22 +227,22 @@ function createHttpsProxyHandler(data: { hosts: string[]; to: string }) {
 }
 
 async function findOrCreateRoute(type: 'main' | 'http', fullID: string) {
-    try {
-        return await caddy.get(`/id/${fullID}`);
-    } catch {
-        await caddy.post(`/id/cadgate.${type}/routes/`, {
-            '@id': fullID,
-        });
-
-        return await caddy.get(`/id/${fullID}`);
+    const existingRoutes = await caddy.get<
+        (ReturnType<typeof createHttpProxyHandler> & { '@id': string })[]
+    >(`/id/cadgate.${type}/routes`);
+    if (existingRoutes.data.some((route) => route['@id'] === fullID)) {
+        return existingRoutes.data.find((route) => route['@id'] === fullID);
     }
+
+    await caddy.post(`/id/cadgate.${type}/routes/`, { '@id': fullID });
+    return await caddy.get(`/id/${fullID}`);
 }
 
 async function updateRoute<T>(id: string, data: T) {
     try {
         await caddy.patch(`/id/${id}`, { ...data, '@id': id });
     } catch (e) {
-        console.error(e);
+        console.error('Error while updating route:', e);
     }
 }
 
