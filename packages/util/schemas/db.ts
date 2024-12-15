@@ -42,10 +42,6 @@ const dbSchema = z.object({
                 .describe(
                     'Integrate this endpoint with your CloudFlare Credentials'
                 ),
-            enforceHttps: z
-                .boolean()
-                .default(false)
-                .describe('Enforce HTTPS to this endpoint'),
             hosts: z
                 .string()
                 .array()

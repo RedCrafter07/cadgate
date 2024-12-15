@@ -67,7 +67,7 @@ export const actions = {
         const name = formData.get('name')?.toString();
         const hosts = formData.getAll('hosts')?.toString().split(',');
         const to = formData.get('to')?.toString();
-        const enforceHttps = formData.get('enforceHttps')?.toString() === 'on';
+        const preservePath = formData.get('preservePath')?.toString() === 'on';
         const cloudflare = formData.get('cloudflare')?.toString() === 'on';
 
         const allData: Partial<redirectEntry> = {
@@ -75,7 +75,7 @@ export const actions = {
             id,
             hosts,
             to,
-            enforceHttps,
+            preservePath,
             cloudflare,
         };
 

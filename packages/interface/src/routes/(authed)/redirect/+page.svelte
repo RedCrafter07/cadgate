@@ -83,9 +83,9 @@
                 />
 
                 <Switch
-                    name="enforceHttps"
+                    name="preservePath"
                     label="Enforce HTTPS"
-                    checked={input.enforceHttps}
+                    checked={input.preservePath}
                 />
                 <Switch
                     name="cloudflare"
@@ -159,7 +159,7 @@
                 <td>Name</td>
                 <td>To</td>
                 <td>Hosts</td>
-                <td>Enforce HTTPS</td>
+                <td>Preserve path</td>
                 <td>Cloudflare integration</td>
                 <td>Actions</td>
             </tr>
@@ -180,7 +180,7 @@
                     </td>
 
                     <td>
-                        {@render checkIcons(redirect.enforceHttps)}
+                        {@render checkIcons(redirect.preservePath)}
                     </td>
                     <td>
                         {@render checkIcons(redirect.cloudflare)}

@@ -10,10 +10,6 @@ export const redirectEntries = z
             .describe(
                 'Integrate this endpoint with your CloudFlare Credentials'
             ),
-        enforceHttps: z
-            .boolean()
-            .default(false)
-            .describe('Enforce HTTPS to this endpoint'),
         hosts: z
             .string()
             .array()
