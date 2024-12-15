@@ -4,11 +4,20 @@ const proxyEntries = z
     .object({
         hosts: z
             .string()
-            .url()
+            .regex(/^(?!https?:\/\/)(?=.*\..+)[^\s]+$/g, {
+                message:
+                    'Invalid url. Please consider excluding "http(s)://" in front.',
+            })
             .array()
             .default([])
             .describe('The hosts proxied to the "To" entry'),
-        to: z.string().url().describe('The location the hosts are proxied to'),
+        to: z
+            .string()
+            .regex(/^https?:\/\/[a-zA-Z0-9.-]+(:[0-9]+)?$/, {
+                message: 'Invalid hostname!',
+            })
+            .url()
+            .describe('The location the hosts are proxied to'),
         enforceHttps: z
             .boolean()
             .default(false)
