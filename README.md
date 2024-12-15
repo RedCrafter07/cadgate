@@ -20,6 +20,7 @@ _Project is not finished yet. You will be able to run the installer in order to 
 -   [ ] Audit logs
 -   [ ] Container lookup (-> automatically use Docker containers for hosts)
 -   [ ] User management (incl. perms)
+-   [ ] API Users
 -   [ ] Importing existing Caddyfiles
 -   [ ] _SQLite as DB (optional)_
 
