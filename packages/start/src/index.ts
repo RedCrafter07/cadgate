@@ -6,6 +6,7 @@ import { dbSchema } from '@/util/schemas/db.ts';
 import { hashPassword } from '@/util/functions/hashPassword.ts';
 import path from 'node:path';
 import { isProcessRunning } from './util/isProcessRunning.ts';
+import * as caddyAPI from '@/util/caddy.ts';
 
 const logger = new Logger();
 
@@ -287,3 +288,14 @@ const stopHandler = async () => {
 };
 
 Deno.addSignalListener('SIGINT', stopHandler);
+
+await new Promise((resolve) => setTimeout(resolve, 1000));
+
+const result = await caddyAPI.getAll();
+
+if (result == null) {
+    logger.warn('Caddy configuration has not been found!');
+    await caddyAPI.resetConfig();
+    await caddyAPI.initialize();
+    logger.indent().success('Caddy has been initialized!');
+}
