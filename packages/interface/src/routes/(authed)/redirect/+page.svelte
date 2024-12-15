@@ -38,6 +38,15 @@
         transition:fade={{ duration: 150 }}
         class="fixed top-0 left-0 w-full h-full bg-slate-900 bg-opacity-25 backdrop-blur-md flex"
     >
+        <!-- svelte-ignore a11y_click_events_have_key_events -->
+        <!-- svelte-ignore a11y_no_static_element_interactions -->
+        <div
+            class="w-full h-full absolute top-0 left-0"
+            onclick={() => {
+                popupID = null;
+            }}
+        ></div>
+
         <div
             class="bg-slate-900 lg:rounded-xl p-8 w-full h-full lg:w-3/4 lg:h-max m-auto border-slate-600 lg:border drop-shadow-2xl flex flex-col gap-6"
         >
