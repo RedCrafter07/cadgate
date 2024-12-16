@@ -27,8 +27,6 @@ const BACKUP_CADDY_EVERY =
 // TODO: Add env variables for enabling specific logs
 // const ENABLE_CADDY_LOGS = Boolean(Deno.env.get('ENABLE_CADDY_LOGS'));
 
-console.log(BACKUP_CADDY_EVERY);
-
 const requiredEnvVariables = [
     'CONFIG_PATH',
     'DATABASE_PATH',
