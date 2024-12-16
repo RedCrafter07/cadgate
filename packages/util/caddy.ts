@@ -22,7 +22,7 @@ export async function getAll() {
 export async function initialize(
     ports: { https: number; http: number } = { https: 443, http: 80 }
 ) {
-    const caddyData = {
+    const caddyServers = {
         cadgate: {
             '@id': 'cadgate.main',
             listen: [`:${ports.https}`],
@@ -35,8 +35,16 @@ export async function initialize(
         },
     };
 
+    const caddyData = {
+        apps: {
+            http: {
+                servers: caddyServers,
+            },
+        },
+    };
+
     try {
-        await caddy.put('/config/apps/http/servers', caddyData);
+        await caddy.put('/config/', caddyData);
     } catch (error) {
         console.error('Error while initializing:', error);
     }
