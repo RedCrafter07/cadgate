@@ -18,6 +18,7 @@ _Project is not finished yet. You will be able to run the installer in order to 
 -   [ ] Installer (for setting env variables, etc.)
 -   [ ] Config overrides
 -   [ ] Audit logs
+-   [ ] Route logs (user access)
 -   [ ] Container lookup (-> automatically use Docker containers for hosts)
 -   [ ] User management (incl. perms)
 -   [ ] API Users
