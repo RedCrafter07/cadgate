@@ -5,6 +5,7 @@
     const props: {
         label?: string;
         name?: string;
+        description?: string;
         checked?: boolean;
         disabled?: boolean;
         onChange?: (v: boolean, e?: Event) => void;
@@ -27,7 +28,7 @@
 </script>
 
 <button
-    class="flex flex-row gap-2 w-max"
+    class="flex flex-row items-center gap-4 w-max"
     onclick={(e) => {
         e.preventDefault();
         change(e);
@@ -46,9 +47,16 @@
         ></div>
     </div>
 
-    {#if props.label}
-        <p class="text-slate-100">
-            {props.label}
-        </p>
-    {/if}
+    <div class="flex flex-col items-start my-auto gap-1">
+        {#if props.label}
+            <p class="text-slate-100">
+                {props.label}
+            </p>
+        {/if}
+        {#if props.description}
+            <p class="text-slate-100 text-sm opacity-75 text-left">
+                {props.description}
+            </p>
+        {/if}
+    </div>
 </button>
