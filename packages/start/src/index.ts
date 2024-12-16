@@ -7,6 +7,7 @@ import { hashPassword } from '@/util/functions/hashPassword.ts';
 import path from 'node:path';
 import { isProcessRunning } from './util/isProcessRunning.ts';
 import * as caddyAPI from '@/util/caddy.ts';
+import checkStatus from './util/waitForOnline.ts';
 
 const logger = new Logger();
 
@@ -269,27 +270,37 @@ const stopHandler = async () => {
 
     logger.indent().info('Stopping interface...');
 
-    if (await isProcessRunning(webInterface)) webInterface.kill('SIGTERM');
-    await webInterface.output();
+    if (await isProcessRunning(webInterface)) {
+        webInterface.kill('SIGTERM');
+        await webInterface.output();
+    }
 
     logger.indent().info('Stopping API...');
 
-    if (await isProcessRunning(api)) api.kill('SIGTERM');
-    await api.output();
+    if (await isProcessRunning(api)) {
+        api.kill('SIGTERM');
+        await api.output();
+    }
 
     logger.indent().info('Stopping caddy...');
 
-    if (await isProcessRunning(caddy)) caddy.kill('SIGTERM');
-    await caddy.output();
+    if (await isProcessRunning(caddy)) {
+        caddy.kill('SIGTERM');
+        await caddy.output();
+    }
 
-    logger.indent().log('Everything has been successfully stopped. Goodbye!');
+    logger.log(
+        '======= Everything has been stopped successfully. Goodbye! ======='
+    );
 
     Deno.exit(0);
 };
 
 Deno.addSignalListener('SIGINT', stopHandler);
 
-await new Promise((resolve) => setTimeout(resolve, 1000));
+logger.info('Waiting for Caddy to start...');
+
+await checkStatus('http://localhost:2019/config/', 250);
 
 const result = await caddyAPI.getAll();
 
@@ -308,4 +319,4 @@ if (result == null) {
     logger.indent().success('Success!');
 }
 
-logger.success('===== Initialization complete! =====');
+logger.success('======= Initialization complete! =======');
