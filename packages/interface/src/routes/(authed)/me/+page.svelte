@@ -27,7 +27,6 @@
     $effect(() => {
         form;
         deleteID = null;
-        showForcePasskeyPopup = false;
 
         if (form?.options) {
             passkeyRegistration = { type: 'loading' };
@@ -105,7 +104,17 @@
                 proceed?
             </p>
 
-            <form action="?/forcekey" method="post" use:enhance>
+            <form
+                action="?/forcekey"
+                method="post"
+                use:enhance={() => {
+                    return async ({ update }) => {
+                        await update();
+
+                        showForcePasskeyPopup = false;
+                    };
+                }}
+            >
                 <input type="checkbox" name="force" checked class="hidden" />
                 <button class="btn btn-error btn-outline">
                     I am 100% sure I want to do this.
@@ -232,28 +241,32 @@
     </div>
     <div class="flex flex-col p-4 gap-4 bg-slate-900 rounded-xl">
         <h3 class="text-2xl">Danger Zone</h3>
-        <form action="?/forcekey" method="post" use:enhance>
+        <form
+            action="?/forcekey"
+            method="post"
+            use:enhance={({ formData, cancel }) => {
+                const force = formData.get('force') === 'on';
+
+                if (force) {
+                    showForcePasskeyPopup = true;
+                    cancel();
+                    return;
+                }
+
+                return async ({ update }) => {
+                    await update();
+                    showForcePasskeyPopup = false;
+                };
+            }}
+            class="flex flex-row items-center justify-between gap-2"
+        >
             <Switch
                 name="force"
                 label="Force Passkey Login"
+                description="Disable login with Email and Password and only allow Passkeys"
                 checked={data.user.forcePasskey}
-                onChange={(v, e) => {
-                    if (v === data.user.forcePasskey) return;
-
-                    e?.preventDefault();
-
-                    if (v) {
-                        showForcePasskeyPopup = true;
-                    } else {
-                        if (
-                            e?.currentTarget.parentElement instanceof
-                            HTMLFormElement
-                        ) {
-                            e.currentTarget.parentElement.submit();
-                        }
-                    }
-                }}
             />
+            <button class="btn btn-outline btn-info">Submit!</button>
         </form>
     </div>
 </div>
