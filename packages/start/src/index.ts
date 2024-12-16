@@ -8,6 +8,7 @@ import path from 'node:path';
 import { isProcessRunning } from './util/isProcessRunning.ts';
 import * as caddyAPI from '@/util/caddy.ts';
 import checkStatus from './util/waitForOnline.ts';
+import { Interval } from '@/util/interval.ts';
 
 const logger = new Logger();
 
@@ -21,8 +22,12 @@ const DATA_PATH = Deno.env.get('DATA_PATH')!;
 const API_PATH = Deno.env.get('API_PATH')!;
 const JWT_SECRET = Deno.env.get('JWT_SECRET')!;
 const DEFAULT_PASSWORD = Deno.env.get('DEFAULT_PASSWORD') ?? 'ch4ngem3';
+const BACKUP_CADDY_EVERY =
+    Number(Deno.env.get('BACKUP_CADDY_EVERY')) || 1 * 60 * 1000;
 // TODO: Add env variables for enabling specific logs
 // const ENABLE_CADDY_LOGS = Boolean(Deno.env.get('ENABLE_CADDY_LOGS'));
+
+console.log(BACKUP_CADDY_EVERY);
 
 const requiredEnvVariables = [
     'CONFIG_PATH',
@@ -55,6 +60,8 @@ logger.info('Running preflight checks');
 
 const API_DIR = path.resolve(path.dirname(API_PATH));
 const API_FILE = path.relative(API_DIR, API_PATH);
+
+const caddyConfPath = path.join(DATA_PATH, 'caddy.json');
 
 const processEnv = {
     DATABASE_PATH,
@@ -218,6 +225,7 @@ if (!configData.isSetUp) {
                 requiresNewEmail: true,
                 requiresNewPassword: true,
                 challenge: null,
+                forcePasskey: false,
             },
         ];
 
@@ -240,10 +248,9 @@ logger.indent().info('Checking for cached configuration...');
 
 try {
     await Deno.mkdir(DATA_PATH, { recursive: true });
-    const configPath = path.join(DATA_PATH, 'caddy.json');
-    await Deno.open(configPath);
+    await Deno.open(caddyConfPath);
 
-    additionalCaddyArgs.push('--config', configPath);
+    additionalCaddyArgs.push('--config', caddyConfPath);
 } catch {
     logger
         .indent()
@@ -289,6 +296,7 @@ const stopHandler = async () => {
         await caddy.output();
     }
 
+    logger.log('');
     logger.log(
         '======= Everything has been stopped successfully. Goodbye! ======='
     );
@@ -319,4 +327,27 @@ if (result == null) {
     logger.indent().success('Success!');
 }
 
+logger.log('');
 logger.success('======= Initialization complete! =======');
+logger.log('');
+
+const configBackup = new Interval(BACKUP_CADDY_EVERY, async () => {
+    let config: unknown;
+
+    try {
+        config = await caddyAPI.getAll();
+    } catch {
+        logger.error('CRITICAL', 'Could not reach caddy!');
+
+        return;
+    }
+
+    const apiFile = await Deno.open(caddyConfPath, {
+        create: true,
+        write: true,
+    });
+
+    await apiFile.write(new TextEncoder().encode(JSON.stringify(config)));
+});
+
+configBackup.start();
