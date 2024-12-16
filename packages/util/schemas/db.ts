@@ -86,6 +86,7 @@ const dbSchema = z.object({
             requiresNewPassword: z.boolean().default(false),
             challenge: z.string().or(z.null()).default(null),
             forcePasskey: z.boolean().default(false),
+            isApiUser: z.boolean().default(false),
         })
         .array(),
 

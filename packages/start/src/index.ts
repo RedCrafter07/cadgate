@@ -226,6 +226,7 @@ if (!configData.isSetUp) {
                 requiresNewPassword: true,
                 challenge: null,
                 forcePasskey: false,
+                isApiUser: false,
             },
         ];
 
@@ -295,7 +296,7 @@ const stopHandler = async () => {
     logger.warn('Exit detected!');
 
     configBackup.stop();
-    
+
     logger.indent().info('Stopping interface...');
 
     if (await isProcessRunning(webInterface)) {
