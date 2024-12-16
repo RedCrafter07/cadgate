@@ -14,6 +14,7 @@ _Project is not finished yet. You will be able to run the installer in order to 
 
 -   [x] Enforce HTTPS
 -   [ ] CloudFlare integration
+-   [ ] Load Balancing / Failover
 -   [ ] Default routes
 -   [ ] Installer (for setting env variables, etc.)
 -   [ ] Config overrides
