@@ -189,4 +189,35 @@ router.put('/mailChange', async ({ request, response }) => {
     response.body = { success };
 });
 
+router.put('/forcePasskey', async ({ request, response }) => {
+    const body = await request.body.json();
+
+    const validation = z
+        .object({ forcePasskey: z.boolean(), userID: z.string() })
+        .safeParse(body);
+
+    if (!validation.success) {
+        response.status = 400;
+        return;
+    }
+
+    const { data } = validation;
+
+    const success = await updateUser(
+        {
+            id: data.userID,
+        },
+        {
+            forcePasskey: data.forcePasskey,
+        }
+    );
+
+    if (!success) {
+        response.status = 500;
+        return;
+    }
+
+    response.status = 200;
+});
+
 export default router;

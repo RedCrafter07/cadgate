@@ -11,6 +11,7 @@
     import IconX from '~icons/tabler/x';
     import { goto } from '$app/navigation';
     import { fade } from 'svelte/transition';
+    import Switch from '$lib/components/Switch.svelte';
 
     let { data, form }: { data: PageData; form: ActionData } = $props();
 
@@ -21,10 +22,12 @@
         | { type: 'success' }
         | { type: 'error'; message: string }
     >({ type: 'none' });
+    let showForcePasskeyPopup = $state(false);
 
     $effect(() => {
         form;
         deleteID = null;
+        showForcePasskeyPopup = false;
 
         if (form?.options) {
             passkeyRegistration = { type: 'loading' };
@@ -66,10 +69,56 @@
     <title>User Settings | Cadgate</title>
 </svelte:head>
 
-{#snippet deleteKeyPopup(id: string | null)}
+{#snippet forcePasskeyPopup()}
     <div
         transition:fade={{ duration: 150 }}
         class="fixed top-0 left-0 w-full h-full bg-slate-900 bg-opacity-75 backdrop-blur-sm flex"
+    >
+        <!-- svelte-ignore a11y_click_events_have_key_events -->
+        <!-- svelte-ignore a11y_no_static_element_interactions -->
+        <div
+            class="absolute top-0 left-0 w-full h-full z-10"
+            onclick={() => {
+                showForcePasskeyPopup = false;
+            }}
+        ></div>
+        <div
+            class="bg-slate-900 lg:rounded-xl p-8 w-full h-full lg:w-3/4 lg:h-max m-auto border-slate-600 lg:border drop-shadow-2xl flex flex-col gap-4 z-20"
+        >
+            <div class="flex flex-row justify-between">
+                <h1 class="text-3xl">Are you sure?</h1>
+
+                <button
+                    class="btn btn-square"
+                    onclick={() => {
+                        showForcePasskeyPopup = false;
+                    }}
+                >
+                    <IconX class="text-xl" />
+                </button>
+            </div>
+
+            <p>
+                Enforcing passkeys for login may lead to account lockout if the
+                passkey is not saved properly. If this happens, an Administrator
+                will need to reset the setting. Are you sure you want to
+                proceed?
+            </p>
+
+            <form action="?/forcekey" method="post" use:enhance>
+                <input type="checkbox" name="force" checked class="hidden" />
+                <button class="btn btn-error btn-outline">
+                    I am 100% sure I want to do this.
+                </button>
+            </form>
+        </div>
+    </div>
+{/snippet}
+
+{#snippet deleteKeyPopup(id: string | null)}
+    <div
+        transition:fade={{ duration: 150 }}
+        class="fixed top-0 left-0 w-full h-full bg-slate-900 bg-opacity-75 backdrop-blur-sm flex z-50"
     >
         <!-- svelte-ignore a11y_click_events_have_key_events -->
         <!-- svelte-ignore a11y_no_static_element_interactions -->
@@ -104,8 +153,7 @@
             <form action="?/delkey" method="post" use:enhance>
                 <input type="text" name="id" class="hidden" value={id} />
 
-                <button class="btn btn-outline btn-error w-full"
-                    >Yeetus!</button
+                <button class="btn btn-outline btn-error w-full">Yeetus!</button
                 >
             </form>
         </div>
@@ -161,10 +209,6 @@
             </div>
         </form>
 
-        {#if deleteID}
-            {@render deleteKeyPopup(deleteID)}
-        {/if}
-
         {#if data.passkeys.length > 0}
             <div class="flex flex-col gap-2">
                 {#each data.passkeys as key}
@@ -186,4 +230,37 @@
             </div>
         {/if}
     </div>
+    <div class="flex flex-col p-4 gap-4 bg-slate-900 rounded-xl">
+        <h3 class="text-2xl">Danger Zone</h3>
+        <form action="?/forcekey" method="post" use:enhance>
+            <Switch
+                name="force"
+                label="Force Passkey Login"
+                checked={data.user.forcePasskey}
+                onChange={(v, e) => {
+                    if (v === data.user.forcePasskey) return;
+
+                    e?.preventDefault();
+
+                    if (v) {
+                        showForcePasskeyPopup = true;
+                    } else {
+                        if (
+                            e?.currentTarget.parentElement instanceof
+                            HTMLFormElement
+                        ) {
+                            e.currentTarget.parentElement.submit();
+                        }
+                    }
+                }}
+            />
+        </form>
+    </div>
 </div>
+
+{#if deleteID}
+    {@render deleteKeyPopup(deleteID)}
+{/if}
+{#if showForcePasskeyPopup}
+    {@render forcePasskeyPopup()}
+{/if}

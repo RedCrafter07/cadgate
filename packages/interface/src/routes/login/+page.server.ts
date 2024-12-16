@@ -48,6 +48,15 @@ export const actions = {
 
         const user: User = userRequest.data;
 
+        if (user.forcePasskey) {
+            return fail(401, {
+                success: false,
+                message:
+                    'Login with default credentials is not supported for this user.',
+                mail,
+            });
+        }
+
         const validationRequest = await axios
             .post(
                 'http://localhost:2000/user/validate',

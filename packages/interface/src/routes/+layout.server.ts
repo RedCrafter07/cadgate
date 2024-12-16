@@ -1,3 +1,4 @@
+import censorUser from '$lib/api/censorUser.js';
 import getUser from '$lib/api/functions/user/get.js';
 import { validate } from '$lib/jwt/index.js';
 import { redirect } from '@sveltejs/kit';
@@ -14,9 +15,9 @@ export const load = async ({ cookies, route }) => {
 
             const u = await getUser({ id: result.sub });
 
-            const user = { ...u, passwordHash: undefined };
+            const censoredUser = censorUser(u);
 
-            return { user };
+            return { user: censoredUser };
         } else {
             cookies.delete('token', { path: '/' });
             if (route.id !== '/login') throw new Error();
