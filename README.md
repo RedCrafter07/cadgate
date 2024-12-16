@@ -25,9 +25,14 @@ _Project is not finished yet. You will be able to run the installer in order to 
 -   [ ] API Users
 -   [ ] Importing existing Caddyfiles
 -   [ ] _SQLite as DB (optional)_
+-   [ ] _TCP Forwarding (optional)_
 
 ## Acknowledgements
 
 -   [Tabler Icons](https://tabler.io/icons) for the favicon & icons used in this project
 -   [SvelteKit](https://kit.svelte.dev) for the frontend framework
 -   [Deno](https://deno.land) for the runtime
+
+## License
+
+This project has been licensed under the GPL-3.0 License. For more information, [please look here](LICENSE)
