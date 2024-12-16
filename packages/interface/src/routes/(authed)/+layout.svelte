@@ -7,7 +7,6 @@
     import IconRoute from '~icons/tabler/route';
     import IconHome from '~icons/tabler/home';
     import IconCat from '~icons/tabler/cat';
-    import IconLogout from '~icons/tabler/logout';
 
     const { children, data } = $props();
 
@@ -34,12 +33,13 @@
             ><IconDirections class="text-lg opacity-90" />
             <span class="lg:block hidden">Redirect</span></a
         >
-        <a href="/system" class="btn"
-            ><IconSettings class="text-lg opacity-90" />
-            <span class="lg:block hidden">System</span></a
-        >
 
         {#if user?.administrator}
+            <a href="/system" class="btn">
+                <IconSettings class="text-lg opacity-90" />
+                <span class="lg:block hidden">System</span>
+            </a>
+
             <div class="lg:block hidden">
                 <button class="btn" disabled>
                     <IconUsers class="my-auto" />
