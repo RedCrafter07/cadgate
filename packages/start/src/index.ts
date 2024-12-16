@@ -272,9 +272,30 @@ const webInterface = cmds.startInterface.spawn();
 webInterface.ref();
 logger.indent().success('Interface has been started successfully!');
 
+const configBackup = new Interval(BACKUP_CADDY_EVERY, async () => {
+    let config: unknown;
+
+    try {
+        config = await caddyAPI.getAll();
+    } catch {
+        logger.error('CRITICAL', 'Could not reach caddy!');
+
+        return;
+    }
+
+    const apiFile = await Deno.open(caddyConfPath, {
+        create: true,
+        write: true,
+    });
+
+    await apiFile.write(new TextEncoder().encode(JSON.stringify(config)));
+});
+
 const stopHandler = async () => {
     logger.warn('Exit detected!');
 
+    configBackup.stop();
+    
     logger.indent().info('Stopping interface...');
 
     if (await isProcessRunning(webInterface)) {
@@ -327,27 +348,8 @@ if (result == null) {
     logger.indent().success('Success!');
 }
 
+configBackup.start();
+
 logger.log('');
 logger.success('======= Initialization complete! =======');
 logger.log('');
-
-const configBackup = new Interval(BACKUP_CADDY_EVERY, async () => {
-    let config: unknown;
-
-    try {
-        config = await caddyAPI.getAll();
-    } catch {
-        logger.error('CRITICAL', 'Could not reach caddy!');
-
-        return;
-    }
-
-    const apiFile = await Deno.open(caddyConfPath, {
-        create: true,
-        write: true,
-    });
-
-    await apiFile.write(new TextEncoder().encode(JSON.stringify(config)));
-});
-
-configBackup.start();
