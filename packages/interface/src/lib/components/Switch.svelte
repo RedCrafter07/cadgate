@@ -1,10 +1,13 @@
 <script lang="ts">
+    type Event = MouseEvent & {
+        currentTarget: EventTarget & HTMLButtonElement;
+    };
     const props: {
         label?: string;
         name?: string;
         checked?: boolean;
         disabled?: boolean;
-        onChange?: (v: boolean) => void;
+        onChange?: (v: boolean, e?: Event) => void;
     } = $props();
 
     let checked = $state(false);
@@ -17,8 +20,8 @@
         if (props.onChange) props.onChange(checked);
     });
 
-    function change() {
-        if (props.onChange) props.onChange(!checked);
+    function change(e: Event) {
+        if (props.onChange) props.onChange(!checked, e);
         checked = !checked;
     }
 </script>
@@ -27,7 +30,7 @@
     class="flex flex-row gap-2 w-max"
     onclick={(e) => {
         e.preventDefault();
-        change();
+        change(e);
     }}
 >
     <input type="checkbox" class="hidden" {checked} name={props.name} />
