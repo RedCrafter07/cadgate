@@ -114,6 +114,15 @@ const dbSchema = z.object({
         })
         .array(),
 
+    system: z
+        .object({
+            ip: z.string().ip().optional(),
+            cfKey: z.string().optional(),
+            cfEnabled: z.boolean().default(false),
+            cfUseProxy: z.boolean().optional(),
+        })
+        .default({ cfEnabled: false }),
+
     version: z.number().default(0.1),
 });
 
