@@ -6,8 +6,13 @@ import { Cloudflare } from '@/util/cloudflare.ts';
 
 const router = new Router();
 
-router.post('/caddy/reset', async ({ request, response }) => {
-    const { uID } = await request.body.json();
+router.use(async ({ request, response }, next) => {
+    let uID;
+    if (request.method === 'GET') {
+        uID = request.headers.get('uID');
+    } else {
+        uID = (await request.body.json()).uID;
+    }
 
     const user = await findUser({ id: uID });
 
@@ -21,6 +26,10 @@ router.post('/caddy/reset', async ({ request, response }) => {
         return;
     }
 
+    next();
+});
+
+router.post('/caddy/reset', async ({ response }) => {
     const proxyEntries = await db.getData('proxyEntries');
     const redirectEntries = await db.getData('redirectEntries');
 
@@ -32,6 +41,58 @@ router.post('/caddy/reset', async ({ request, response }) => {
 });
 
 router
+    .get('/cloudflare', async ({ response }) => {
+        const system = await db.getData('system');
+
+        if (!system) {
+            response.status = 500;
+            return;
+        }
+
+        const { cfEnabled, cfKey, cfUseProxy, ip } = system;
+
+        const data = { cfEnabled, cfKey, cfUseProxy, ip };
+
+        response.body = data;
+        response.status = 200;
+    })
+    .post('/cloudflare', async ({ request, response }) => {
+        const body = await request.body.json();
+
+        const schema = z.object({
+            enabled: z.boolean(),
+        });
+
+        const validation = schema.safeParse(body);
+
+        if (!validation.success) {
+            response.status = 400;
+            return;
+        }
+
+        const {
+            data: { enabled },
+        } = validation;
+
+        if (enabled === true) {
+            const systemData = await db.getData('system');
+
+            if (
+                systemData.ip !== undefined &&
+                systemData.cfKey !== undefined &&
+                systemData.cfUseProxy !== undefined
+            ) {
+                await db.push('system.cfEnabled', true);
+                response.status = 200;
+            } else {
+                await db.push('system.cfEnabled', false);
+                response.status = 400;
+            }
+        } else {
+            db.push('system.cfEnabled', false);
+            response.status = 200;
+        }
+    })
     .put('/cloudflare', async ({ request, response }) => {
         const body = await request.body.json();
 
@@ -66,11 +127,11 @@ router
         const systemData = await db.getData('system');
 
         if (
-            systemData.ip !== undefined &&
-            systemData.cfKey !== undefined &&
-            systemData.cfUseProxy !== undefined
+            systemData.ip === undefined ||
+            systemData.cfKey === undefined ||
+            systemData.cfUseProxy === undefined
         )
-            await db.push('system.cfEnabled', true);
+            await db.push('system.cfEnabled', false);
 
         response.status = 200;
         response.body = { zones };
@@ -83,6 +144,12 @@ router
     });
 
 router
+    .get('/ip', async ({ response }) => {
+        const ip = await db.getData('system.ip');
+
+        response.body = { ip };
+        response.status = 200;
+    })
     .post('/ip/auto', async ({ response }) => {
         const ip = await Deno.resolveDns('host.docker.internal', 'A');
 
@@ -110,11 +177,11 @@ router
         const systemData = await db.getData('system');
 
         if (
-            systemData.ip !== undefined &&
-            systemData.cfKey !== undefined &&
-            systemData.cfUseProxy !== undefined
+            systemData.ip === undefined ||
+            systemData.cfKey === undefined ||
+            systemData.cfUseProxy === undefined
         )
-            await db.push('system.cfEnabled', true);
+            await db.push('system.cfEnabled', false);
 
         response.status = 200;
     })
