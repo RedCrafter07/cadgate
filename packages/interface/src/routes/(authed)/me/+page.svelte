@@ -71,7 +71,7 @@
 {#snippet forcePasskeyPopup()}
     <div
         transition:fade={{ duration: 150 }}
-        class="fixed top-0 left-0 w-full h-full bg-slate-900 bg-opacity-75 backdrop-blur-sm flex"
+        class="fixed top-0 left-0 w-full h-full bg-slate-900 bg-opacity-75 backdrop-blur-sm flex z-50"
     >
         <!-- svelte-ignore a11y_click_events_have_key_events -->
         <!-- svelte-ignore a11y_no_static_element_interactions -->
