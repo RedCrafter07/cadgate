@@ -41,7 +41,10 @@ class Cloudflare {
     }
 
     async createOrEdit(
-        data: Omit<cloudflare.DNS.Records.RecordEditParams.ARecord, 'zone_id'>,
+        data: Omit<
+            cloudflare.DNS.Records.RecordEditParams.ARecord,
+            'zone_id' | 'content' | 'type'
+        > & { content?: string },
         zones?: Awaited<ReturnType<typeof this.getZones>>,
         dnsRecords?: Awaited<ReturnType<typeof this.getDnsRecords>>
     ) {
@@ -61,12 +64,16 @@ class Cloudflare {
 
         if (record)
             return await this.client.dns.records.edit(record.id!, {
+                content: this.serverIP,
                 ...data,
+                type: 'A',
                 zone_id: zone.id,
             });
         else
             return await this.client.dns.records.create({
+                content: this.serverIP,
                 ...data,
+                type: 'A',
                 zone_id: zone.id,
             });
     }
@@ -109,7 +116,7 @@ class Cloudflare {
 
         await Promise.all(
             cfEntries.map(async (e) => {
-                await this.createOrEdit({ type: 'A', ...e }, zones, dnsRecords);
+                await this.createOrEdit({ ...e }, zones, dnsRecords);
             })
         );
     }
