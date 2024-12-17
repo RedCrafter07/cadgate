@@ -188,7 +188,15 @@ function createHttpProxyHandler(
         upstreams: { dial: string }[];
     }[]
 ) {
-    if (!enforceHttps) return handler;
+    if (!enforceHttps)
+        return {
+            match: [
+                {
+                    host: hosts,
+                },
+            ],
+            handle: handler,
+        };
 
     const redirectHandler = {
         match: [
