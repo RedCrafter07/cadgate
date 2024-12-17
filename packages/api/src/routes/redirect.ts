@@ -8,6 +8,7 @@ import {
     deleteRedirect,
 } from '@/api/src/util/db.ts';
 import * as caddyAPI from '@/util/caddy.ts';
+import { cloudflareHandler } from '@/api/src/util/cloudflareHandler.ts';
 
 const router = new Router()
     .get('/', async ({ response: res }) => {
@@ -36,6 +37,7 @@ const router = new Router()
         }
 
         await caddyAPI.createRedirectRoute(data);
+        await cloudflareHandler(data, 'create');
 
         response.status = 200;
     })
@@ -76,11 +78,19 @@ const router = new Router()
         }
 
         await caddyAPI.updateRedirectRoute(redirect);
+        await cloudflareHandler(redirect, 'edit');
 
         response.status = 200;
     })
     .delete('/:id', async ({ params, response }) => {
         const { id } = params;
+
+        const redirect = await findRedirect({ id });
+
+        if (!redirect) {
+            response.status = 404;
+            return;
+        }
 
         const success = await deleteRedirect({ id });
 
@@ -90,6 +100,7 @@ const router = new Router()
         }
 
         await caddyAPI.deleteRedirectRoute(id);
+        await cloudflareHandler(redirect, 'delete');
 
         response.status = 200;
     });

@@ -8,6 +8,7 @@ import {
     updateProxy,
 } from '@/api/src/util/db.ts';
 import * as caddyAPI from '@/util/caddy.ts';
+import { cloudflareHandler } from '@/api/src/util/cloudflareHandler.ts';
 
 const router = new Router()
     .get('/', async ({ response: res }) => {
@@ -36,6 +37,8 @@ const router = new Router()
         }
 
         await caddyAPI.createProxyRoute(data);
+
+        await cloudflareHandler(data, 'create');
 
         response.status = 200;
     })
@@ -76,11 +79,18 @@ const router = new Router()
         }
 
         await caddyAPI.updateProxyRoute(proxy);
+        await cloudflareHandler(proxy, 'edit');
 
         response.status = 200;
     })
     .delete('/:id', async ({ params, response }) => {
         const { id } = params;
+
+        const proxy = await findProxy({ id });
+        if (!proxy) {
+            response.status = 404;
+            return;
+        }
 
         const success = await deleteProxy({ id });
 
@@ -90,6 +100,7 @@ const router = new Router()
         }
 
         await caddyAPI.deleteProxyRoute(id);
+        await cloudflareHandler(proxy, 'delete');
 
         response.status = 200;
     });
