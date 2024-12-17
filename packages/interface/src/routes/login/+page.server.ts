@@ -3,6 +3,7 @@ import axios, { AxiosError } from 'axios';
 import * as jwt from '$lib/jwt';
 import type { User } from '$lib/schemas/user.js';
 import getLoginOptions from '$lib/api/functions/webauthn/login/options.js';
+import api from '$lib/api/api.js';
 
 export const load = ({ cookies }) => {
     if (cookies.get('token')) {
@@ -57,9 +58,11 @@ export const actions = {
             });
         }
 
-        const validationRequest = await axios
+        console.log('BOMBA');
+
+        const validationRequest = await api
             .post(
-                'http://localhost:2000/user/validate',
+                '/user/validate',
                 {
                     id: user.id,
                     password,
@@ -89,6 +92,7 @@ export const actions = {
 
         cookies.set('token', token, {
             path: '/',
+            secure: false,
         });
 
         throw redirect(307, '/');
