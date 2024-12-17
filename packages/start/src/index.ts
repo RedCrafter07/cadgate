@@ -24,6 +24,7 @@ const JWT_SECRET = Deno.env.get('JWT_SECRET')!;
 const DEFAULT_PASSWORD = Deno.env.get('DEFAULT_PASSWORD') ?? 'ch4ngem3';
 const BACKUP_CADDY_EVERY =
     Number(Deno.env.get('BACKUP_CADDY_EVERY')) || 1 * 60 * 1000;
+const DEV = Boolean(Deno.env.get('DEV') ?? false);
 // TODO: Add env variables for enabling specific logs
 // const ENABLE_CADDY_LOGS = Boolean(Deno.env.get('ENABLE_CADDY_LOGS'));
 
@@ -67,6 +68,19 @@ const processEnv = {
     JWT_SECRET,
 };
 
+const allArgs = {
+    dev: {
+        api: ['run', '-A', '--watch', API_FILE],
+        interface: ['task', 'dev'],
+    },
+    prod: {
+        api: ['run', '-A', , API_FILE],
+        interface: ['index.js'],
+    },
+} as Record<'dev' | 'prod', Record<'api' | 'interface', string[]>>;
+
+const currentArgs = allArgs[DEV ? 'dev' : 'prod'];
+
 const cmds = {
     startCaddy: (...args: string[]) =>
         new Deno.Command('caddy', {
@@ -76,7 +90,7 @@ const cmds = {
             stderr: 'piped',
         }),
     startAPI: new Deno.Command(Deno.execPath(), {
-        args: ['run', '-A', '--watch', API_FILE],
+        args: currentArgs.api,
         stdin: 'piped',
         stdout: 'piped',
         stderr: 'piped',
@@ -87,8 +101,8 @@ const cmds = {
         },
         cwd: API_DIR,
     }),
-    startInterface: new Deno.Command(Deno.execPath(), {
-        args: ['run', '-A', 'dev:vite'],
+    startInterface: new Deno.Command(DEV ? Deno.execPath() : 'node', {
+        args: currentArgs.interface,
         stdin: 'piped',
         stdout: 'piped',
         stderr: 'piped',
@@ -96,6 +110,8 @@ const cmds = {
         env: {
             ...processEnv,
             API_URL,
+            HOST: '0.0.0.0',
+            PORT: '5173',
         },
         cwd: INTERFACE_PATH,
     }),
