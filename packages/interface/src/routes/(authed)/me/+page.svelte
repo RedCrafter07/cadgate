@@ -169,7 +169,7 @@
     </div>
 {/snippet}
 
-<div class="flex flex-col gap-8 mt-4">
+<div class="flex flex-col gap-8 my-4">
     <div class="flex flex-col p-4 gap-4 bg-slate-900 rounded-xl">
         <h3 class="text-2xl">Quick Access</h3>
         <div class="flex flex-row gap-4">
