@@ -135,9 +135,7 @@
     {@render popup(popupData)}
 {/if}
 
-<div class="my-4"></div>
-
-<div class="p-3 rounded-xl bg-slate-900">
+<div class="p-3 rounded-xl bg-slate-900 my-4">
     {#if form?.message}
         <div
             class="p-2 w-full rounded-xl"
