@@ -9,7 +9,7 @@ const router = new Router();
 router.use(async ({ request, response }, next) => {
     let uID;
 
-    if (request.method === 'GET') {
+    if (request.method === 'GET' || request.method === 'DELETE') {
         uID = request.headers.get('uID');
     } else {
         uID = (await request.body.json()).uID;
@@ -140,6 +140,7 @@ router
     .delete('/cloudflare', async ({ response }) => {
         await db.push('system.cfEnabled', false);
         await db.delete('system.cfKey');
+        await db.delete('system.cfUseProxy');
 
         response.status = 200;
     });
