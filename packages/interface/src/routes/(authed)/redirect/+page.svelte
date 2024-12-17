@@ -22,6 +22,8 @@
             : redirects.find((p) => p.id === popupID) || null,
     );
 
+    let loading = $state(false);
+
     $effect(() => {
         if (form?.success) {
             popupID = null;
@@ -65,7 +67,13 @@
             <form
                 action={`?/update`}
                 method="post"
-                use:enhance
+                use:enhance={() => {
+                    loading = true;
+                    return async ({ update }) => {
+                        await update();
+                        loading = false;
+                    };
+                }}
                 class="flex flex-col gap-6"
             >
                 <input type="text" name="id" class="hidden" value={popupID} />
@@ -102,7 +110,7 @@
                     checked={input.cloudflare}
                 />
 
-                <button class="btn btn-outline btn-success">
+                <button class="btn btn-outline btn-success" disabled={loading}>
                     {#if popupID === 'new'}
                         Add new Redirect!
                     {:else}
@@ -205,14 +213,27 @@
                             >
                                 <IconEdit class="text-lg" />
                             </button>
-                            <form action="?/delete" method="post" use:enhance>
+                            <form
+                                action="?/delete"
+                                method="post"
+                                use:enhance={() => {
+                                    loading = true;
+                                    return async ({ update }) => {
+                                        await update();
+                                        loading = false;
+                                    };
+                                }}
+                            >
                                 <input
                                     type="text"
                                     class="hidden"
                                     name="id"
                                     value={redirect.id}
                                 />
-                                <button class="btn btn-square">
+                                <button
+                                    class="btn btn-square"
+                                    disabled={loading}
+                                >
                                     <IconTrash class="text-lg" />
                                 </button>
                             </form>
