@@ -18,6 +18,10 @@ class Database<S extends ZodObject<any>> {
         );
     }
 
+    async __forcePushOnlyIfYouHaveTo<T>(path: string, data: T) {
+        await this.db.push(path, data);
+    }
+
     async reload() {
         await this.db.reload();
     }
