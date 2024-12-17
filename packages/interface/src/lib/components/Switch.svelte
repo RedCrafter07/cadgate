@@ -29,10 +29,12 @@
 
 <button
     class="flex flex-row items-center gap-4 w-max"
+    class:opacity-50={props.disabled}
     onclick={(e) => {
         e.preventDefault();
         change(e);
     }}
+    disabled={props.disabled}
 >
     <input type="checkbox" class="hidden" {checked} name={props.name} />
     <div
