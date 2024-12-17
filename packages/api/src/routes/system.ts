@@ -8,6 +8,7 @@ const router = new Router();
 
 router.use(async ({ request, response }, next) => {
     let uID;
+
     if (request.method === 'GET') {
         uID = request.headers.get('uID');
     } else {
@@ -26,7 +27,7 @@ router.use(async ({ request, response }, next) => {
         return;
     }
 
-    next();
+    await next();
 });
 
 router.post('/caddy/reset', async ({ response }) => {
@@ -53,8 +54,8 @@ router
 
         const data = { cfEnabled, cfKey, cfUseProxy, ip };
 
-        response.body = data;
         response.status = 200;
+        response.body = data;
     })
     .post('/cloudflare', async ({ request, response }) => {
         const body = await request.body.json();
@@ -145,7 +146,7 @@ router
 
 router
     .get('/ip', async ({ response }) => {
-        const ip = await db.getData('system.ip');
+        const ip = (await db.getData('system')).ip;
 
         response.body = { ip };
         response.status = 200;
