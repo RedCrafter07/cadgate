@@ -23,6 +23,12 @@ class Cloudflare {
         });
     }
 
+    async validateKey() {
+        const res = await this.client.user.tokens.verify();
+
+        return res.status === 'active';
+    }
+
     async getZones() {
         const zones = await this.client.zones.list();
 
