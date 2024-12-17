@@ -37,7 +37,11 @@ export async function cloudflareHandler(
             {
                 await Promise.all(
                     data.hosts.map(async (h) => {
-                        await cf.createOrEdit({ name: h }, zones, dns);
+                        await cf.createOrEdit(
+                            { name: h, comment: 'Cadgate Integration' },
+                            zones,
+                            dns
+                        );
                     })
                 );
             }
