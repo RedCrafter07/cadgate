@@ -34,6 +34,37 @@ class Cloudflare {
         return mapped;
     }
 
+    async createOrEdit(
+        data: Omit<cloudflare.DNS.Records.RecordEditParams.ARecord, 'zone_id'>,
+        zones?: Awaited<ReturnType<typeof this.getZones>>,
+        dnsRecords?: Awaited<ReturnType<typeof this.getDnsRecords>>
+    ) {
+        if (!zones) {
+            zones = await this.getZones();
+        }
+
+        const zone = this.getZoneForDomain(zones, data.name);
+
+        if (!zone) return false;
+
+        if (!dnsRecords) dnsRecords = await this.getDnsRecords([zone]);
+
+        const record = dnsRecords.find(
+            (r) => r.name === data.name && r.type === 'A'
+        );
+
+        if (record)
+            return await this.client.dns.records.edit(record.id!, {
+                ...data,
+                zone_id: zone.id,
+            });
+        else
+            return await this.client.dns.records.create({
+                ...data,
+                zone_id: zone.id,
+            });
+    }
+
     async createFromConfig({
         proxies,
         redirects,
@@ -68,46 +99,28 @@ class Cloudflare {
                 availableDomains.includes(this.getDomainNames(e.name)[0])
             );
 
-        const dnsRecords = (
-            await Promise.all(
-                zones.map(
-                    async (z) =>
-                        (
-                            await this.client.dns.records.list({
-                                zone_id: z.id,
-                            })
-                        ).result
-                )
-            )
-        ).flat();
+        const dnsRecords = await this.getDnsRecords(zones);
 
         await Promise.all(
             cfEntries.map(async (e) => {
-                const zone = zones.find(
-                    (z) => z.name === this.getDomainNames(e.name)[0]
-                )!;
-
-                const record = dnsRecords.find(
-                    (r) => r.name === e.name && r.type === 'A'
-                );
-
-                if (record)
-                    await this.client.dns.records.edit(record.id!, {
-                        zone_id: zone.id,
-                        ...e,
-                        type: 'A',
-                    });
-                else
-                    await this.client.dns.records.create({
-                        zone_id: zone.id,
-                        type: 'A',
-                        ...e,
-                    });
+                await this.createOrEdit({ type: 'A', ...e }, zones, dnsRecords);
             })
         );
     }
 
-    async getDnsRecords(zones: Awaited<ReturnType<typeof this.getZones>>) {
+    getZoneForDomain(
+        zones: Awaited<ReturnType<typeof this.getZones>>,
+        url: string
+    ) {
+        const domain = this.getDomainNames(url)[0];
+
+        return zones.find((z) => z.name === domain);
+    }
+
+    async getDnsRecords(
+        zones: Awaited<ReturnType<typeof this.getZones>>,
+        options: { forceComment: boolean } = { forceComment: false }
+    ) {
         const dnsRecords = (
             await Promise.all(
                 zones.map(
@@ -115,6 +128,10 @@ class Cloudflare {
                         (
                             await this.client.dns.records.list({
                                 zone_id: z.id,
+                                type: 'A',
+                                comment: options.forceComment
+                                    ? { exact: 'Cadgate Integration' }
+                                    : undefined,
                             })
                         ).result
                 )
@@ -122,6 +139,29 @@ class Cloudflare {
         ).flat();
 
         return dnsRecords;
+    }
+
+    async deleteDnsRecord(
+        domain: string,
+        zones?: Awaited<ReturnType<typeof this.getZones>>,
+        dnsRecords?: Awaited<ReturnType<typeof this.getDnsRecords>>
+    ) {
+        if (!zones) zones = await this.getZones();
+
+        const zone = this.getZoneForDomain(zones, domain);
+
+        if (!zone) return false;
+
+        if (!dnsRecords)
+            dnsRecords = await this.getDnsRecords([zone], {
+                forceComment: true,
+            });
+
+        const record = dnsRecords.find((r) => r.name === domain);
+
+        if (!record) return false;
+
+        await this.client.dns.records.delete(record.id!, { zone_id: zone.id });
     }
 
     getDomainNames(...domains: string[]) {
