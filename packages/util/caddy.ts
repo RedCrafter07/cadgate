@@ -52,7 +52,12 @@ export async function initialize(
 
 export async function resetConfig() {
     await caddy.delete('/config');
-    await caddy.post('/config', {});
+    await caddy.post('/config', {
+        storage: {
+            module: 'file_system',
+            root: '/data/caddy',
+        },
+    });
 }
 
 export async function createFromConfig(config: {
