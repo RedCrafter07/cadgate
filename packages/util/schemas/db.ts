@@ -3,6 +3,18 @@ import { z } from 'npm:zod';
 const dbSchema = z.object({
     proxyEntries: z
         .object({
+            tls: z
+                .object({
+                    mode: z.enum(['auto']),
+                })
+                .or(
+                    z.object({
+                        mode: z.enum(['file']),
+                        key: z.string(),
+                        cert: z.string(),
+                    })
+                )
+                .default({ mode: 'auto' }),
             hosts: z
                 .string()
                 .regex(/^(?!https?:\/\/)(?=.*\..+)[^\s]+$/g, {
@@ -120,6 +132,11 @@ const dbSchema = z.object({
             cfKey: z.string().optional(),
             cfEnabled: z.boolean().default(false),
             cfUseProxy: z.boolean().optional(),
+            tls: z
+                .object({
+                    email: z.string(),
+                })
+                .optional(),
         })
         .default({ cfEnabled: false }),
 
