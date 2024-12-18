@@ -14,7 +14,20 @@ const dbSchema = z.object({
                         cert: z.string(),
                     })
                 )
+                .optional()
                 .default({ mode: 'auto' }),
+            additionalHosts: z
+                .object({
+                    hosts: z
+                        .string()
+                        .regex(/^(?!https?:\/\/)(?=.*\..+)[^\s]+$/g, {
+                            message:
+                                'Invalid url. Please consider excluding "http(s)://" in front.',
+                        })
+                        .array(),
+                    mode: z.enum(['failover', 'loadBalancing']),
+                })
+                .optional(),
             hosts: z
                 .string()
                 .regex(/^(?!https?:\/\/)(?=.*\..+)[^\s]+$/g, {
