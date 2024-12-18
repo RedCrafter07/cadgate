@@ -14,12 +14,13 @@ _Project is not finished yet. You will be able to run the installer in order to 
 
 -   [x] Enforce HTTPS
 -   [x] CloudFlare integration
--   [ ] Certificate management
+-   [ ] Very basic certificate management
 -   [ ] Load Balancing / Failover
 -   [ ] Installer (for setting env variables, etc.)
 -   [ ] Emergency scripts
 -   [ ] Default routes
 -   [ ] Offload CloudFlare to different process -> no long waiting times
+-   [ ] Advanced Certificate management, incl. Cert renewal (via Certbot)
 -   [ ] Config overrides
 -   [ ] Audit logs
 -   [ ] Route logs (user access)
