@@ -1,6 +1,7 @@
 import axios from 'npm:axios';
 import { dbSchema } from './schemas/db.ts';
 import { z } from 'npm:zod';
+import path from 'node:path';
 
 const proxySchema = dbSchema.shape.proxyEntries.element;
 const redirectSchema = dbSchema.shape.redirectEntries.element;
@@ -12,6 +13,8 @@ const caddy = axios.create({
     baseURL: 'http://localhost:2019',
     headers: { 'Content-Type': 'application/json' },
 });
+
+async function configPreflight<T>(config: T) {}
 
 export async function getAll() {
     const res = await caddy.get('/config');
@@ -141,6 +144,35 @@ export async function updateProxyRoute({
         httpsHandler.handle
     );
     await updateRoute(httpID, httpHandler);
+}
+
+export async function loadCertDir(
+    baseDir: string,
+    dir: string,
+    forHosts: string[]
+) {
+    const certTag = `cadgate.certdir.${dir}`;
+    const fileData = {
+        certificate: path.join(baseDir, dir, 'cert.pem'),
+        key: path.join(baseDir, dir, 'key.pem'),
+        format: 'pem',
+        tags: [certTag],
+    };
+
+    const tlsConfigData = {
+        match: {
+            sni: forHosts,
+        },
+        certificate_selection: {
+            any_tag: [certTag],
+        },
+    };
+
+    await caddy.post(
+        '/id/cadgate.main/tls_connection_policies/',
+        tlsConfigData
+    );
+    await caddy.post('/config/apps/tls/certificates/load_files/', fileData);
 }
 
 export async function createProxyRoute(entry: proxySchema) {
