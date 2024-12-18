@@ -63,6 +63,19 @@ const dbSchema = z.object({
 
     redirectEntries: z
         .object({
+            tls: z
+                .object({
+                    mode: z.enum(['auto']),
+                })
+                .or(
+                    z.object({
+                        mode: z.enum(['file']),
+                        key: z.string(),
+                        cert: z.string(),
+                    })
+                )
+                .optional()
+                .default({ mode: 'auto' }),
             id: z
                 .string()
                 .default(() => crypto.randomUUID().split('-').join('')),

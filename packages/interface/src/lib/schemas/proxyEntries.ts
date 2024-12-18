@@ -2,6 +2,31 @@ import { z } from 'zod';
 
 const proxyEntries = z
     .object({
+        tls: z
+            .object({
+                mode: z.enum(['auto']),
+            })
+            .or(
+                z.object({
+                    mode: z.enum(['file']),
+                    key: z.string(),
+                    cert: z.string(),
+                })
+            )
+            .optional()
+            .default({ mode: 'auto' }),
+        additionalHosts: z
+            .object({
+                hosts: z
+                    .string()
+                    .regex(/^(?!https?:\/\/)(?=.*\..+)[^\s]+$/g, {
+                        message:
+                            'Invalid url. Please consider excluding "http(s)://" in front.',
+                    })
+                    .array(),
+                mode: z.enum(['failover', 'loadBalancing']),
+            })
+            .optional(),
         hosts: z
             .string()
             .regex(/^(?!https?:\/\/)(?=.*\..+)[^\s]+$/g, {
@@ -13,10 +38,9 @@ const proxyEntries = z
             .describe('The hosts proxied to the "To" entry'),
         to: z
             .string()
-            .regex(/^https?:\/\/[a-zA-Z0-9.-]+(:[0-9]+)?$/, {
-                message: 'Invalid hostname!',
+            .regex(/^(?!https?:\/\/)(?=.*\..+)[^\s]+$/g, {
+                message: 'Invalid hostname! Maybe try it without http(s)://?',
             })
-            .url()
             .describe('The location the hosts are proxied to'),
         enforceHttps: z
             .boolean()
