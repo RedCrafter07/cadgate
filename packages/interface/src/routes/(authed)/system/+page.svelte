@@ -50,6 +50,30 @@
             <button class="btn btn-outline btn-success">Save</button>
         </form>
     </div>
+    <div class="flex flex-col p-4 gap-4 bg-slate-900 rounded-xl">
+        <h1 class="text-2xl">TLS Settings</h1>
+        <p>Email to use for obtaining certs</p>
+        <form
+            action="?/tls-mail"
+            method="post"
+            use:enhance={() => {
+                loading = true;
+                return async ({ update }) => {
+                    await update();
+                    loading = false;
+                };
+            }}
+            class="flex flex-row gap-2 w-full"
+        >
+            <input
+                class="w-full"
+                type="text"
+                name="mail"
+                placeholder="tls@example.com"
+            />
+            <button class="btn btn-outline btn-success">Save</button>
+        </form>
+    </div>
 
     <div class="flex flex-col p-4 gap-4 bg-slate-900 rounded-xl">
         <h1 class="text-2xl">CloudFlare Integration Settings</h1>
