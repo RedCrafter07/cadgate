@@ -12,11 +12,6 @@ const app = new Application();
 
 const router = new Router();
 
-// TODO:
-// - Audit Logging
-// - User management & permissions
-// - System Settings
-
 router.use('/proxy', proxy.routes(), proxy.allowedMethods());
 router.use('/redirect', redirect.routes(), redirect.allowedMethods());
 router.use('/user', user.routes(), user.allowedMethods());
