@@ -41,6 +41,10 @@ export async function initialize(
                 servers: caddyServers,
             },
         },
+        storage: {
+            module: 'file_system',
+            root: '/data/caddy',
+        },
     };
 
     try {
@@ -52,12 +56,7 @@ export async function initialize(
 
 export async function resetConfig() {
     await caddy.delete('/config');
-    await caddy.post('/config', {
-        storage: {
-            module: 'file_system',
-            root: '/data/caddy',
-        },
-    });
+    await caddy.post('/config', {});
 }
 
 export async function createFromConfig(config: {
