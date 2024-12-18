@@ -27,6 +27,7 @@ export async function initialize(
             '@id': 'cadgate.main',
             listen: [`:${ports.https}`],
             routes: [],
+            tls_connection_policies: [],
         },
         cadgateHttpFallback: {
             '@id': 'cadgate.http',
@@ -39,6 +40,11 @@ export async function initialize(
         apps: {
             http: {
                 servers: caddyServers,
+            },
+            tls: {
+                certificates: {
+                    load_files: [],
+                },
             },
         },
         storage: {
