@@ -146,6 +146,39 @@ router
     });
 
 router
+    .get('/tls/mail', async ({ response }) => {
+        const ip = (await db.getData('system')).ip;
+
+        response.body = { ip };
+        response.status = 200;
+    })
+    .post('/tls/mail', async ({ request, response }) => {
+        const body = await request.body.json();
+
+        const schema = z.object({ mail: z.string().email() });
+
+        const validation = await schema.safeParse(body);
+
+        if (!validation.success) {
+            response.status = 400;
+            return;
+        }
+
+        const { data } = validation;
+
+        await db.push('system.tls', {
+            email: data.mail,
+        });
+
+        response.status = 200;
+    })
+    .delete('/tls/mail', async ({ response }) => {
+        await db.delete('system.tls');
+
+        response.status = 200;
+    });
+
+router
     .get('/ip', async ({ response }) => {
         const ip = (await db.getData('system')).ip;
 
@@ -153,6 +186,9 @@ router
         response.status = 200;
     })
     .post('/ip/auto', async ({ response }) => {
+        response.status = 501;
+        return;
+
         const ip = await Deno.resolveDns('host.docker.internal', 'A');
 
         response.body = { ip };
