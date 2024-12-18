@@ -16,9 +16,9 @@ _Project is not finished yet. You will be able to run the installer in order to 
 -   [x] CloudFlare integration
 -   [ ] Certificate management
 -   [ ] Load Balancing / Failover
--   [ ] Default routes
 -   [ ] Installer (for setting env variables, etc.)
 -   [ ] Emergency scripts
+-   [ ] Default routes
 -   [ ] Offload CloudFlare to different process -> no long waiting times
 -   [ ] Config overrides
 -   [ ] Audit logs
