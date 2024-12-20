@@ -39,10 +39,10 @@ const dbSchema = z.object({
                 .describe('The hosts proxied to the "To" entry'),
             to: z
                 .string()
-                .regex(/^https?:\/\/[a-zA-Z0-9.-]+(:[0-9]+)?$/, {
-                    message: 'Invalid hostname!',
+                .regex(/^(?!https?:\/\/)(?=.*\..+)[^\s]+$/g, {
+                    message:
+                        'Invalid url. Please consider excluding "http(s)://" in front.',
                 })
-                .url()
                 .describe('The location the hosts are proxied to'),
             enforceHttps: z
                 .boolean()

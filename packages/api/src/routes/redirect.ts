@@ -36,8 +36,8 @@ const router = new Router()
             return;
         }
 
-        await caddyAPI.createRedirectRoute(data);
         await cloudflareHandler(data, 'create');
+        await caddyAPI.createRedirectRoute(data);
 
         response.status = 200;
     })
@@ -77,8 +77,8 @@ const router = new Router()
             return;
         }
 
-        await caddyAPI.updateRedirectRoute(redirect);
         await cloudflareHandler(redirect, 'edit');
+        await caddyAPI.updateRedirectRoute(redirect);
 
         response.status = 200;
     })
@@ -99,8 +99,8 @@ const router = new Router()
             return;
         }
 
-        await caddyAPI.deleteRedirectRoute(id);
         await cloudflareHandler(redirect, 'delete');
+        await caddyAPI.deleteRedirectRoute(id);
 
         response.status = 200;
     });
