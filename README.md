@@ -27,6 +27,8 @@ _Project is not finished yet. You will be able to run the installer in order to 
 -   [ ] Container lookup (-> automatically use Docker containers for hosts)
 -   [ ] User management (incl. perms)
 -   [ ] API Users
+-   [ ] Access Lists (blacklist/whitelist countries/ips/etc.)
+-   [ ] Backups
 -   [ ] Importing existing Caddyfiles
 -   [ ] _SQLite as DB (optional)_
 -   [ ] _TCP Forwarding (optional)_
