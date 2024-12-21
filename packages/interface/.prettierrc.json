@@ -7,8 +7,8 @@
     "singleQuote": true,
     "alignObjectProperties": true,
     "quoteProps": "as-needed",
-    "prettier.trailingComma": "all",
-    "prettier.useTabs": true,
-    "prettier.jsxSingleQuote": true,
+    "trailingComma": "all",
+    "useTabs": true,
+    "jsxSingleQuote": true,
     "tabWidth": 4
 }
