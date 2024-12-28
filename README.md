@@ -1,6 +1,6 @@
 # Cadgate
 
-### A website for managing your Caddy Reverse Proxy / Redirects
+### A website for managing your Caddy Reverse Proxy / Redirect Entries
 
 ## Why?
 
