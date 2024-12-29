@@ -25,7 +25,7 @@ const DEFAULT_PASSWORD = Deno.env.get('DEFAULT_PASSWORD') ?? 'ch4ngem3';
 const BACKUP_CADDY_EVERY =
     Number(Deno.env.get('BACKUP_CADDY_EVERY')) || 1 * 60 * 1000;
 const DEV = (Deno.env.get('DEV') ?? 'false') === 'true';
-const DEBUG = (Deno.env.get('DEBUG') ?? 'false') === 'true';
+const STARTER_DEBUG = (Deno.env.get('STARTER_DEBUG') ?? 'false') === 'true';
 
 // TODO: Add env variables for enabling specific logs
 // const ENABLE_CADDY_LOGS = Boolean(Deno.env.get('ENABLE_CADDY_LOGS'));
@@ -88,14 +88,14 @@ const cmds = {
         new Deno.Command('caddy', {
             args: ['run', ...args],
             stdin: 'piped',
-            stdout: DEBUG ? 'inherit' : 'piped',
-            stderr: DEBUG ? 'inherit' : 'piped',
+            stdout: STARTER_DEBUG ? 'inherit' : 'piped',
+            stderr: STARTER_DEBUG ? 'inherit' : 'piped',
         }),
     startAPI: new Deno.Command(Deno.execPath(), {
         args: currentArgs.api,
-        stdin: DEBUG ? 'inherit' : 'piped',
-        stdout: DEBUG ? 'inherit' : 'piped',
-        stderr: DEBUG ? 'inherit' : 'piped',
+        stdin: STARTER_DEBUG ? 'inherit' : 'piped',
+        stdout: STARTER_DEBUG ? 'inherit' : 'piped',
+        stderr: STARTER_DEBUG ? 'inherit' : 'piped',
         clearEnv: true,
         env: {
             ...processEnv,
@@ -105,9 +105,9 @@ const cmds = {
     }),
     startInterface: new Deno.Command(DEV ? Deno.execPath() : '/usr/bin/node', {
         args: currentArgs.interface,
-        stdin: DEBUG ? 'inherit' : 'piped',
-        stdout: DEBUG ? 'inherit' : 'piped',
-        stderr: DEBUG ? 'inherit' : 'piped',
+        stdin: STARTER_DEBUG ? 'inherit' : 'piped',
+        stdout: STARTER_DEBUG ? 'inherit' : 'piped',
+        stderr: STARTER_DEBUG ? 'inherit' : 'piped',
         clearEnv: true,
         env: {
             ...processEnv,
