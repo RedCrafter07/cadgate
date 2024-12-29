@@ -3,52 +3,52 @@
 @import 'tailwindcss/utilities';
 
 * {
-    font-family: 'DM Sans Variable', sans-serif;
+	font-family: 'DM Sans Variable', sans-serif;
 }
 
 body {
-    @apply bg-slate-900 text-slate-50;
+	@apply bg-slate-900 text-slate-50;
 }
 
 input[type='text'],
 input[type='password'],
 input[type='email'],
 textarea {
-    @apply bg-slate-800 border-none rounded-xl p-4 outline-none ring-transparent focus:ring-transparent placeholder:text-slate-500 transition-all duration-100;
+	@apply bg-slate-800 border-none rounded-xl p-4 outline-none ring-transparent focus:ring-transparent placeholder:text-slate-500 transition-all duration-100;
 }
 
 .btn.btn-square {
-    @apply px-2 py-2;
+	@apply px-2 py-2;
 }
 
 .btn.btn-success.btn-outline:not(:disabled) {
-    @apply border-2 border-lime-600 text-lime-600 hover:text-white hover:bg-lime-600;
+	@apply border-2 border-lime-600 text-lime-600 hover:text-white hover:bg-lime-600;
 }
 
 .btn.btn-error.btn-outline:not(:disabled) {
-    @apply border-2 border-red-500 text-red-500 hover:text-white hover:bg-red-500;
+	@apply border-2 border-red-500 text-red-500 hover:text-white hover:bg-red-500;
 }
 
 .btn.btn-warning.btn-outline:not(:disabled) {
-    @apply border-2 border-yellow-500 text-yellow-500 hover:text-white hover:bg-yellow-500;
+	@apply border-2 border-yellow-500 text-yellow-500 hover:text-white hover:bg-yellow-500;
 }
 
 .btn.btn-info.btn-outline:not(:disabled) {
-    @apply border-2 border-blue-500 text-blue-500 hover:text-white hover:bg-blue-500;
+	@apply border-2 border-blue-500 text-blue-500 hover:text-white hover:bg-blue-500;
 }
 
 .btn {
-    @apply px-4 py-2 rounded-xl transition-all duration-100 flex flex-row justify-center gap-2;
+	@apply px-4 py-2 rounded-xl transition-all duration-100 flex flex-row justify-center items-center gap-2;
 }
 
 .btn.btn-bg:not(:disabled) {
-    @apply bg-slate-800 hover:bg-slate-700;
+	@apply bg-slate-800 hover:bg-slate-700;
 }
 
 .btn:not(:disabled) {
-    @apply hover:bg-slate-50 hover:bg-opacity-10 active:scale-90 items-center;
+	@apply hover:bg-slate-50 hover:bg-opacity-10 active:scale-90;
 }
 
 .btn:disabled {
-    @apply opacity-50;
+	@apply opacity-50;
 }

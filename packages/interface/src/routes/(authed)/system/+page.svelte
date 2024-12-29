@@ -44,7 +44,11 @@
 				value={data.cloudflare.ip}
 				placeholder="123.45.678.90"
 			/>
-			<button class="btn btn-outline btn-info" formaction="?/ip-auto">
+			<button
+				class="btn btn-outline btn-info"
+				formaction="?/ip-auto"
+				disabled
+			>
 				Auto
 			</button>
 			<button class="btn btn-outline btn-success">Save</button>
