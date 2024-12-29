@@ -1,6 +1,6 @@
 <script lang="ts">
 	import type { Snippet } from 'svelte';
-	import { circInOut } from 'svelte/easing';
+	import { circOut } from 'svelte/easing';
 	import { tweened } from 'svelte/motion';
 
 	type TweenedOptions<T> = Parameters<typeof tweened<T>>[1];
@@ -13,7 +13,7 @@
 
 	const animationConfig: TweenedOptions<number> = {
 		duration: duration,
-		easing: circInOut,
+		easing: circOut,
 	};
 
 	let animate = tweened(0, animationConfig);
