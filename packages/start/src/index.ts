@@ -25,6 +25,7 @@ const DEFAULT_PASSWORD = Deno.env.get('DEFAULT_PASSWORD') ?? 'ch4ngem3';
 const BACKUP_CADDY_EVERY =
     Number(Deno.env.get('BACKUP_CADDY_EVERY')) || 1 * 60 * 1000;
 const DEV = (Deno.env.get('DEV') ?? 'false') === 'true';
+const DEBUG = (Deno.env.get('DEBUG') ?? 'false') === 'true';
 
 // TODO: Add env variables for enabling specific logs
 // const ENABLE_CADDY_LOGS = Boolean(Deno.env.get('ENABLE_CADDY_LOGS'));
@@ -87,14 +88,14 @@ const cmds = {
         new Deno.Command('caddy', {
             args: ['run', ...args],
             stdin: 'piped',
-            stdout: 'piped',
-            stderr: 'piped',
+            stdout: DEBUG ? 'inherit' : 'piped',
+            stderr: DEBUG ? 'inherit' : 'piped',
         }),
     startAPI: new Deno.Command(Deno.execPath(), {
         args: currentArgs.api,
-        stdin: 'piped',
-        stdout: 'piped',
-        stderr: 'piped',
+        stdin: DEBUG ? 'inherit' : 'piped',
+        stdout: DEBUG ? 'inherit' : 'piped',
+        stderr: DEBUG ? 'inherit' : 'piped',
         clearEnv: true,
         env: {
             ...processEnv,
@@ -104,9 +105,9 @@ const cmds = {
     }),
     startInterface: new Deno.Command(DEV ? Deno.execPath() : '/usr/bin/node', {
         args: currentArgs.interface,
-        stdin: 'piped',
-        stdout: 'piped',
-        stderr: 'piped',
+        stdin: DEBUG ? 'inherit' : 'piped',
+        stdout: DEBUG ? 'inherit' : 'piped',
+        stderr: DEBUG ? 'inherit' : 'piped',
         clearEnv: true,
         env: {
             ...processEnv,
@@ -304,7 +305,9 @@ const configBackup = new Interval(BACKUP_CADDY_EVERY, async () => {
         write: true,
     });
 
-    await apiFile.write(new TextEncoder().encode(JSON.stringify(config)));
+    apiFile.close();
+
+    await Deno.writeTextFile(caddyConfPath, JSON.stringify(config));
 });
 
 const stopHandler = async () => {
