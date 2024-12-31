@@ -8,15 +8,21 @@ I'm lazy and I like GUIs
 
 ## How to use
 
-_Project is not finished yet. You will be able to run the installer in order to automatically set everything up!_
+Use the installer:
+
+```sh
+curl -sSL https://raw.githubusercontent.com/RedCrafter07/cadgate/refs/heads/main/packages/installer/install.sh | bash
+```
+
+_Please note that the image is not yet built. Please be patient!_
 
 ## Planned features
 
 -   [x] Enforce HTTPS
 -   [x] CloudFlare integration
+-   [x] Installer (for setting env variables, etc.)
 -   [ ] Very basic certificate management
 -   [ ] Load Balancing / Failover
--   [ ] Installer (for setting env variables, etc.)
 -   [ ] Emergency scripts
 -   [ ] Default routes
 -   [ ] Offload CloudFlare to different process -> no long waiting times
