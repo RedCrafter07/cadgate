@@ -13,7 +13,9 @@ body {
 input[type='text'],
 input[type='password'],
 input[type='email'],
-textarea {
+input[type='file'],
+textarea,
+select {
 	@apply bg-slate-800 border-none rounded-xl p-4 outline-none ring-transparent focus:ring-transparent placeholder:text-slate-500 transition-all duration-100;
 }
 
@@ -37,7 +39,12 @@ textarea {
 	@apply border-2 border-blue-500 text-blue-500 hover:text-white hover:bg-blue-500;
 }
 
-.btn {
+input[type='file']::file-selector-button {
+	@apply border-none text-slate-50 bg-slate-900 hover:bg-slate-700;
+}
+
+.btn,
+input[type='file']::file-selector-button {
 	@apply px-4 py-2 rounded-xl transition-all duration-100 flex flex-row justify-center items-center gap-2;
 }
 
