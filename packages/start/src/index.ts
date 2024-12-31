@@ -100,6 +100,7 @@ const cmds = {
         env: {
             ...processEnv,
             PORT: '2000',
+            DATA_PATH,
         },
         cwd: API_DIR,
     }),
