@@ -166,6 +166,15 @@ const dbSchema = z.object({
         })
         .default({ cfEnabled: false }),
 
+    tlsCerts: z
+        .object({
+            id: z
+                .string()
+                .default(() => crypto.randomUUID().split('-').join('')),
+            hosts: z.string().array(),
+        })
+        .array(),
+
     version: z.number().default(0.1),
 });
 
