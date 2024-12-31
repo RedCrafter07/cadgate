@@ -8,117 +8,124 @@ import { fail } from '@sveltejs/kit';
 import { z } from 'zod';
 
 export const load = async () => {
-    const proxies = await getProxies();
+	const proxies = await getProxies();
 
-    return { proxies };
+	return { proxies };
 };
 
 export const actions = {
-    delete: async ({ cookies, request }) => {
-        const token = cookies.get('token')!;
+	delete: async ({ cookies, request }) => {
+		const token = cookies.get('token')!;
 
-        try {
-            await validate(token);
-        } catch {
-            return fail(401, {
-                message: 'Invalid credentials. Please re-login and try again.',
-                success: false,
-            });
-        }
+		try {
+			await validate(token);
+		} catch {
+			return fail(401, {
+				message: 'Invalid credentials. Please re-login and try again.',
+				success: false,
+			});
+		}
 
-        const id = (await request.formData()).get('id');
+		const id = (await request.formData()).get('id');
 
-        const validation = z.string().safeParse(id);
+		const validation = z.string().safeParse(id);
 
-        if (!validation.success) {
-            return fail(400, {
-                message: 'Invalid parameters',
-                success: false,
-            });
-        }
+		if (!validation.success) {
+			return fail(400, {
+				message: 'Invalid parameters',
+				success: false,
+			});
+		}
 
-        const success = await deleteProxy(validation.data);
+		const success = await deleteProxy(validation.data);
 
-        return {
-            message: success
-                ? 'Successfully deleted Proxy!'
-                : 'Internal server error',
-            success,
-        };
-    },
-    update: async ({ cookies, request }) => {
-        const token = cookies.get('token')!;
+		return {
+			message: success
+				? 'Successfully deleted Proxy!'
+				: 'Internal server error',
+			success,
+		};
+	},
+	update: async ({ cookies, request }) => {
+		const token = cookies.get('token')!;
 
-        try {
-            await validate(token);
-        } catch {
-            return fail(401, {
-                message: 'Invalid credentials. Please re-login and try again.',
-                success: false,
-            });
-        }
+		try {
+			await validate(token);
+		} catch {
+			return fail(401, {
+				message: 'Invalid credentials. Please re-login and try again.',
+				success: false,
+			});
+		}
 
-        const formData = await request.formData();
+		const formData = await request.formData();
 
-        const id = formData.get('id')?.toString();
-        const name = formData.get('name')?.toString();
-        const hosts = formData.getAll('hosts')?.toString().split(',');
-        const to = formData.get('to')?.toString();
-        const enforceHttps = formData.get('enforceHttps')?.toString() === 'on';
-        const cloudflare = formData.get('cloudflare')?.toString() === 'on';
+		const id = formData.get('id')?.toString();
+		let data = {};
 
-        const allData: Partial<proxyEntry> = {
-            name,
-            id,
-            hosts,
-            to,
-            enforceHttps,
-            cloudflare,
-        };
+		try {
+			data = JSON.parse(formData.get('data')?.toString()!);
+		} catch {
+			return fail(400, {
+				message: 'Invalid JSON data',
+				success: false,
+			});
+		}
 
-        if (id && id === 'new') {
-            const validation = proxyEntries.element.safeParse({
-                ...allData,
-                id: undefined,
-            });
+		const { tlsMode, cert, key, ...rest } = data as Record<string, any>;
 
-            if (!validation.success) {
-                return fail(400, {
-                    message: 'Invalid parameters were provided.',
-                    success: false,
-                });
-            }
+		const allData: Partial<proxyEntry> = {
+			...rest,
+			tls: {
+				mode: tlsMode,
+				cert,
+				key,
+			},
+		};
 
-            const { data } = validation;
+		if (id && id === 'new') {
+			const validation = proxyEntries.element.safeParse({
+				...allData,
+				id: undefined,
+			});
 
-            const success = await addProxy(data);
+			if (!validation.success) {
+				return fail(400, {
+					message: 'Invalid parameters were provided.',
+					success: false,
+				});
+			}
 
-            return {
-                message: success
-                    ? 'Successfully added Proxy!'
-                    : 'Internal server error',
-                success,
-            };
-        } else {
-            const validation = proxyEntries.element.safeParse(allData);
+			const { data } = validation;
 
-            if (!validation.success) {
-                return fail(400, {
-                    message: 'Invalid parameters were provided.',
-                    success: false,
-                });
-            }
+			const success = await addProxy(data);
 
-            const { data } = validation;
+			return {
+				message: success
+					? 'Successfully added Proxy!'
+					: 'Internal server error',
+				success,
+			};
+		} else {
+			const validation = proxyEntries.element.safeParse(allData);
 
-            const success = await updateProxy(data);
+			if (!validation.success) {
+				return fail(400, {
+					message: 'Invalid parameters were provided.',
+					success: false,
+				});
+			}
 
-            return {
-                message: success
-                    ? 'Successfully updated Proxy!'
-                    : 'Internal server error',
-                success,
-            };
-        }
-    },
+			const { data } = validation;
+
+			const success = await updateProxy(data);
+
+			return {
+				message: success
+					? 'Successfully updated Proxy!'
+					: 'Internal server error',
+				success,
+			};
+		}
+	},
 };
