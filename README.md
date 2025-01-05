@@ -11,7 +11,7 @@ I'm lazy and I like GUIs
 Use the installer:
 
 ```sh
-curl -sSL https://raw.githubusercontent.com/RedCrafter07/cadgate/refs/heads/main/packages/installer/install.sh | bash
+curl -sSL https://cgi.r07.dev | bash
 ```
 
 _Please note that the image is not yet built. Please be patient!_
