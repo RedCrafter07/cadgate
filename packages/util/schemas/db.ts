@@ -173,7 +173,8 @@ const dbSchema = z.object({
                 .default(() => crypto.randomUUID().split('-').join('')),
             hosts: z.string().array(),
         })
-        .array(),
+        .array()
+        .default([]),
 
     version: z.number().default(0.1),
 });
