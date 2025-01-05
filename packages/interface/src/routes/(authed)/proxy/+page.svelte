@@ -279,7 +279,7 @@
 		<p>Mode</p>
 		<select name="tlsMode" class="w-full" bind:value={tlsMode}>
 			<option value="auto">Auto</option>
-			<option value="file">File</option>
+			<option value="file" disabled>File</option>
 		</select>
 
 		{#if tlsMode === 'file'}
