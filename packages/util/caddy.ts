@@ -2,6 +2,7 @@ import axios from 'npm:axios';
 import { dbSchema } from './schemas/db.ts';
 import { z } from 'npm:zod';
 import path from 'node:path';
+import { Database } from './db/index.ts';
 
 const proxySchema = dbSchema.shape.proxyEntries.element;
 const redirectSchema = dbSchema.shape.redirectEntries.element;
@@ -9,12 +10,16 @@ const redirectSchema = dbSchema.shape.redirectEntries.element;
 type proxySchema = z.infer<typeof proxySchema>;
 type redirectSchema = z.infer<typeof redirectSchema>;
 
+const dataPath = Deno.env.get('DATA_PATH')!;
+
+type DbType = Database<typeof dbSchema>;
+
 const caddy = axios.create({
     baseURL: 'http://localhost:2019',
     headers: { 'Content-Type': 'application/json' },
 });
 
-async function configPreflight<T>(config: T) {}
+// async function configPreflight<T>(config: T) {}
 
 export async function getAll() {
     const res = await caddy.get('/config');
@@ -146,11 +151,49 @@ export async function updateProxyRoute({
     await updateRoute(httpID, httpHandler);
 }
 
-export async function loadCertDir(
-    baseDir: string,
-    dir: string,
-    forHosts: string[]
+async function loadCerts(
+    db: DbType,
+    hosts: string[],
+    key: string,
+    cert: string
 ) {
+    const tlsCerts = await db.getData('tlsCerts');
+
+    let hostWithCert = tlsCerts.find((c) =>
+        c.hosts.some((h) => hosts.includes(h))
+    );
+
+    const tlsBase = path.join(dataPath, 'tls');
+
+    if (!hostWithCert) {
+        hostWithCert = {
+            hosts,
+            id: crypto.randomUUID().split('-').join(''),
+        };
+    } else {
+        hostWithCert.hosts.push(
+            ...hosts.filter((h) => !hostWithCert!.hosts.includes(h))
+        );
+    }
+
+    await Deno.writeTextFile(
+        path.join(tlsBase, hostWithCert.id, 'key.pem'),
+        key
+    );
+    await Deno.writeTextFile(
+        path.join(tlsBase, hostWithCert.id, 'cert.pem'),
+        cert
+    );
+
+    const updatedData = [
+        ...tlsCerts.filter((c) => c.id !== hostWithCert.id),
+        hostWithCert,
+    ];
+
+    await db.push('tlsCerts', updatedData);
+}
+
+async function loadCertDir(baseDir: string, dir: string, forHosts: string[]) {
     const certTag = `cadgate.certdir.${dir}`;
     const fileData = {
         certificate: path.join(baseDir, dir, 'cert.pem'),
