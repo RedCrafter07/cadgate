@@ -1,166 +1,195 @@
+import getAccessURL from '$lib/api/functions/system/accessURL/get';
+import setAccessURL from '$lib/api/functions/system/accessURL/set.js';
 import deleteCloudflare from '$lib/api/functions/system/cloudflare/delete.js';
 import getCloudflare from '$lib/api/functions/system/cloudflare/get.js';
 import cloudflareStatus from '$lib/api/functions/system/cloudflare/status.js';
 import updateCloudflare from '$lib/api/functions/system/cloudflare/update.js';
-import autoIP from '$lib/api/functions/system/ip/auto.js';
-import getIP from '$lib/api/functions/system/ip/get.js';
 import setIP from '$lib/api/functions/system/ip/set.js';
 import { checkJwt } from '$lib/jwt/check.js';
 import { error, fail, redirect } from '@sveltejs/kit';
 
 export const load = async ({ cookies }) => {
-    const jwt = await checkJwt(cookies);
+	const jwt = await checkJwt(cookies);
 
-    if (!jwt) {
-        throw redirect(307, '/');
-    }
+	if (!jwt) {
+		throw redirect(307, '/');
+	}
 
-    if (!jwt.user.administrator) {
-        throw redirect(307, '/');
-    }
+	if (!jwt.user.administrator) {
+		throw redirect(307, '/');
+	}
 
-    const cloudflareData = await getCloudflare(jwt.user.id);
+	const cloudflareData = await getCloudflare(jwt.user.id);
 
-    if (!cloudflareData)
-        throw error(500, {
-            message: 'Error while fetching IP and/or Cloudflare configuration',
-        });
+	if (!cloudflareData)
+		throw error(500, {
+			message: 'Error while fetching IP and/or Cloudflare configuration',
+		});
 
-    return { cloudflare: cloudflareData };
+	const accessURLData = await getAccessURL(jwt.user.id);
+
+	if (!accessURLData)
+		throw error(500, {
+			message: 'Error while fetching IP and/or Cloudflare configuration',
+		});
+
+	return { cloudflare: cloudflareData, accessURL: accessURLData.accessURL };
 };
 
 export const actions = {
-    'ip-auto': async ({ cookies }) => {
-        const jwt = await checkJwt(cookies);
+	'access-url': async ({ cookies, request }) => {
+		const jwt = await checkJwt(cookies);
 
-        if (!jwt) {
-            return error(401, { message: 'Unauthorized' });
-        }
+		if (!jwt) {
+			return error(401, { message: 'Unauthorized' });
+		}
 
-        const ip = await autoIP(jwt.user.id);
+		const accessURL = (await request.formData()).get('url')?.toString();
 
-        if (!ip) {
-            return fail(500, { message: 'Internal server error' });
-        }
+		if (!accessURL || accessURL.length < 1) {
+			return fail(400, { message: 'Bad request', success: false });
+		}
 
-        return { message: 'Success!', ip: ip.ip, success: true };
-    },
-    ip: async ({ cookies, request }) => {
-        const jwt = await checkJwt(cookies);
+		const response = await setAccessURL(jwt.user.id, accessURL);
 
-        if (!jwt) {
-            return error(401, { message: 'Unauthorized' });
-        }
+		if (!response) {
+			return fail(500, { message: 'Internal Server Error' });
+		}
 
-        const ip = (await request.formData()).get('ip')?.toString();
+		return { message: 'Success', success: true };
+	},
+	'ip-auto': async ({ cookies }) => {
+		return error(500, { message: 'Not implemented.' });
+		/* const jwt = await checkJwt(cookies);
 
-        if (!ip) {
-            return fail(400, { message: 'Invalid request', success: false });
-        }
+		if (!jwt) {
+			return error(401, { message: 'Unauthorized' });
+		}
 
-        const success = await setIP(jwt.user.id, ip);
+		const ip = await autoIP(jwt.user.id);
 
-        if (!success) {
-            return fail(500, {
-                message: 'Internal server error',
-                success: false,
-            });
-        }
+		if (!ip) {
+			return fail(500, { message: 'Internal server error' });
+		}
 
-        return { message: 'Success', success: true };
-    },
-    cloudflare: async ({ cookies, request }) => {
-        const jwt = await checkJwt(cookies);
+		return { message: 'Success!', ip: ip.ip, success: true }; */
+	},
+	ip: async ({ cookies, request }) => {
+		const jwt = await checkJwt(cookies);
 
-        if (!jwt) {
-            return error(401, { message: 'Unauthorized' });
-        }
+		if (!jwt) {
+			return error(401, { message: 'Unauthorized' });
+		}
 
-        const formData = await request.formData();
+		const ip = (await request.formData()).get('ip')?.toString();
 
-        const token = formData.get('token')?.toString();
-        const useProxy = formData.get('useProxy')?.toString() === 'on';
+		if (!ip) {
+			return fail(400, { message: 'Invalid request', success: false });
+		}
 
-        if (!token) {
-            return fail(400, {
-                message: 'Not all required parameters have been provided!',
-            });
-        }
+		const success = await setIP(jwt.user.id, ip);
 
-        const success = await updateCloudflare(jwt.user.id, {
-            apiKey: token,
-            useProxy,
-        });
+		if (!success) {
+			return fail(500, {
+				message: 'Internal server error',
+				success: false,
+			});
+		}
 
-        if (!success) {
-            return fail(500, {
-                message: 'Internal server error',
-            });
-        }
+		return { message: 'Success', success: true };
+	},
+	cloudflare: async ({ cookies, request }) => {
+		const jwt = await checkJwt(cookies);
 
-        return {
-            message: 'Settings have been set successfully!',
-            success: true,
-        };
-    },
-    'cloudflare-enable': async ({ cookies, request }) => {
-        const jwt = await checkJwt(cookies);
+		if (!jwt) {
+			return error(401, { message: 'Unauthorized' });
+		}
 
-        if (!jwt) {
-            return error(401, { message: 'Unauthorized' });
-        }
+		const formData = await request.formData();
 
-        const cfSettings = await getCloudflare(jwt.user.id);
+		const token = formData.get('token')?.toString();
+		const useProxy = formData.get('useProxy')?.toString() === 'on';
 
-        if (!cfSettings) {
-            return error(500, { message: 'Internal server error' });
-        }
+		if (!token) {
+			return fail(400, {
+				message: 'Not all required parameters have been provided!',
+			});
+		}
 
-        if (
-            cfSettings.cfKey === undefined ||
-            cfSettings.cfUseProxy === undefined
-        ) {
-            return fail(400, {
-                message: 'CloudFlare related settings have to be set first.',
-                success: false,
-            });
-        }
+		const success = await updateCloudflare(jwt.user.id, {
+			apiKey: token,
+			useProxy,
+		});
 
-        const enable =
-            (await request.formData()).get('enable')?.toString() === 'on';
+		if (!success) {
+			return fail(500, {
+				message: 'Internal server error',
+			});
+		}
 
-        const success = await cloudflareStatus(jwt.user.id, enable);
+		return {
+			message: 'Settings have been set successfully!',
+			success: true,
+		};
+	},
+	'cloudflare-enable': async ({ cookies, request }) => {
+		const jwt = await checkJwt(cookies);
 
-        if (!success) {
-            return fail(500, {
-                message: 'Internal server error',
-                success: false,
-            });
-        }
+		if (!jwt) {
+			return error(401, { message: 'Unauthorized' });
+		}
 
-        return {
-            success: true,
-            message: `The CloudFlare Integration has been ${
-                enable ? 'enabled' : 'disabled'
-            } successfully!`,
-        };
-    },
-    'cloudflare-del': async ({ cookies }) => {
-        const jwt = await checkJwt(cookies);
+		const cfSettings = await getCloudflare(jwt.user.id);
 
-        if (!jwt) {
-            return error(401, { message: 'Unauthorized' });
-        }
+		if (!cfSettings) {
+			return error(500, { message: 'Internal server error' });
+		}
 
-        const success = await deleteCloudflare(jwt.user.id);
+		if (
+			cfSettings.cfKey === undefined ||
+			cfSettings.cfUseProxy === undefined
+		) {
+			return fail(400, {
+				message: 'CloudFlare related settings have to be set first.',
+				success: false,
+			});
+		}
 
-        if (!success) {
-            return fail(500, { message: 'Internal server error' });
-        }
+		const enable =
+			(await request.formData()).get('enable')?.toString() === 'on';
 
-        return {
-            success: true,
-            message: 'CloudFlare Settings have been deleted!',
-        };
-    },
+		const success = await cloudflareStatus(jwt.user.id, enable);
+
+		if (!success) {
+			return fail(500, {
+				message: 'Internal server error',
+				success: false,
+			});
+		}
+
+		return {
+			success: true,
+			message: `The CloudFlare Integration has been ${
+				enable ? 'enabled' : 'disabled'
+			} successfully!`,
+		};
+	},
+	'cloudflare-del': async ({ cookies }) => {
+		const jwt = await checkJwt(cookies);
+
+		if (!jwt) {
+			return error(401, { message: 'Unauthorized' });
+		}
+
+		const success = await deleteCloudflare(jwt.user.id);
+
+		if (!success) {
+			return fail(500, { message: 'Internal server error' });
+		}
+
+		return {
+			success: true,
+			message: 'CloudFlare Settings have been deleted!',
+		};
+	},
 };

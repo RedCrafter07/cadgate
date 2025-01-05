@@ -163,6 +163,17 @@ const dbSchema = z.object({
                     email: z.string(),
                 })
                 .optional(),
+            mainURL: z
+                .string()
+                .regex(
+                    /^https?:\/\/(?:(?:[a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}|localhost:\d+)$/g,
+                    {
+                        message:
+                            'Invalid URL. URL must start with http:// or https://',
+                    }
+                )
+                .optional()
+                .default('http://localhost:3000'),
         })
         .default({ cfEnabled: false }),
 

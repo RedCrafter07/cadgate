@@ -179,6 +179,34 @@ router
     });
 
 router
+    .get('/accessURL', async ({ response }) => {
+        const accessURL = (await db.getData('system')).mainURL;
+
+        response.body = { accessURL };
+        response.status = 200;
+    })
+    .post('/accessURL', async ({ request, response }) => {
+        const json = await request.body.json();
+
+        const schema = z.object({
+            accessURL: z.string(),
+        });
+
+        const validation = schema.safeParse(json);
+
+        if (!validation.success) {
+            response.status = 401;
+            return;
+        }
+
+        const { data } = validation;
+
+        await db.push('system.mainURL', data.accessURL);
+
+        response.status = 200;
+    });
+
+router
     .get('/ip', async ({ response }) => {
         const ip = (await db.getData('system')).ip;
 

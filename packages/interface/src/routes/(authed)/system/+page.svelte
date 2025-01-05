@@ -24,7 +24,12 @@
 
 	<div class="flex flex-col p-4 gap-4 bg-slate-900 rounded-xl">
 		<h1 class="text-2xl">Server Related Settings</h1>
-		<p>IP Address</p>
+		<div>
+			<p>IP Address</p>
+			<p class="opacity-50 text-sm">
+				Will be entered in the CloudFlare integration.
+			</p>
+		</div>
 		<form
 			action="?/ip"
 			method="post"
@@ -51,6 +56,35 @@
 			>
 				Auto
 			</button>
+			<button class="btn btn-outline btn-success">Save</button>
+		</form>
+
+		<div>
+			<p>Access URL</p>
+			<p class="opacity-50 text-sm">
+				Used for Passkey Authentication. You will only be able to use
+				Passkeys on that specific page.
+			</p>
+		</div>
+		<form
+			action="?/access-url"
+			method="post"
+			use:enhance={() => {
+				loading = true;
+				return async ({ update }) => {
+					await update();
+					loading = false;
+				};
+			}}
+			class="flex flex-row gap-2 w-full"
+		>
+			<input
+				class="w-full"
+				type="text"
+				name="url"
+				value={data.accessURL}
+				placeholder="cadgate.example.com"
+			/>
 			<button class="btn btn-outline btn-success">Save</button>
 		</form>
 	</div>

@@ -21,10 +21,7 @@ import { Buffer } from 'node:buffer';
 import moment from 'npm:moment';
 import { AuthenticationResponseJSON } from 'jsr:@simplewebauthn/types@12';
 import { decodeKey, encodeKey } from '@/api/src/util/keyEncoding.ts';
-
-const origin = 'http://localhost:5173';
-const rpName = `Cadgate @ ${origin}`;
-const rpID = 'localhost';
+import getPasskeySettings from '@/api/src/util/getPasskeySettings.ts';
 
 type DbPasskey = z.infer<typeof dbSchema.shape.passkeys.element>;
 
@@ -58,13 +55,14 @@ router.get('/register/:id', async ({ params, response }) => {
         return;
     }
 
+    const { rpID, rpName } = await getPasskeySettings();
+
     const options = await generateRegistrationOptions({
         rpID,
         rpName,
         userID: Buffer.from(user.id),
         userName: user.name,
         attestationType: 'none',
-
         authenticatorSelection: {
             residentKey: 'required',
             userVerification: 'preferred',
@@ -88,6 +86,8 @@ router.post('/register', async ({ request, response }) => {
     const body = await request.body.json();
     const { userID, registrationResponse, name } = body;
     const user = await findUser({ id: userID });
+
+    const { origin, rpID } = await getPasskeySettings();
 
     if (!user || !user.challenge) {
         response.status = 400;
@@ -134,6 +134,8 @@ router.post('/register', async ({ request, response }) => {
 });
 
 router.get('/login', async ({ response }) => {
+    const { rpID } = await getPasskeySettings();
+
     const options = await generateAuthenticationOptions({
         rpID,
         allowCredentials: [],
@@ -162,6 +164,8 @@ router.post('/login', async ({ request, response }) => {
         response.status = 400;
         return;
     }
+
+    const { origin, rpID } = await getPasskeySettings();
 
     const challenge = challenges[sID];
 
