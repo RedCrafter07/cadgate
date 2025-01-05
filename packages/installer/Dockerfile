@@ -1,7 +1,11 @@
-FROM denoland/deno:latest
+FROM denoland/deno:alpine-2.1.4
+
+WORKDIR /app
 
 COPY . .
 
-RUN deno install
+RUN deno cache src/index.ts
 
-CMD ["deno", "run", "src/index.ts"]
+USER deno
+
+CMD ["deno", "run", "-A", "src/index.ts"]
