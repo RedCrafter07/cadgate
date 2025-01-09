@@ -2,19 +2,21 @@
 
 ### A website for managing your Caddy Reverse Proxy / Redirect Entries
 
-## Why?
+## Content
 
-I'm lazy and I like GUIs
+-   [Installation](#installation)
+-   [Planned features](#planned-features)
+-   [Project Structure](#project-structure)
+-   [Acknowledgements](#acknowledgements)
+-   [License](#license)
 
-## How to use
+## Installation
 
-Use the installer:
+### _Please note that Cadgate is not meant to be used in a production environment yet._
 
 ```sh
 curl -sSL https://cgi.r07.dev | bash
 ```
-
-_Please note that Cadgate is not meant to be used in a production environment yet._
 
 The installer has the following environment variables:
 
