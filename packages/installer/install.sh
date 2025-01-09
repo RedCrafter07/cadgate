@@ -8,7 +8,7 @@ echo -e "${GREEN}> Downloading the installer...${NOCOLOR}"
 curl -L https://github.com/RedCrafter07/cadgate/releases/latest/download/installer -o cadgateInstaller
 chmod +x cadgateInstaller
 
-if ["${X}" = "true"]; then
+if ${X:-false}; then
 	./cadgateInstaller
 else
     echo -e "${GREEN}> File saved to ./cadgateInstaller.${NOCOLOR}"
