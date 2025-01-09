@@ -114,7 +114,7 @@ const cmds = {
             ...processEnv,
             API_URL,
             HOST: '0.0.0.0',
-            PORT: DEV ? '5173' : '3000',
+            PORT: DEV ? '5173' : '2080',
         },
         cwd: INTERFACE_PATH,
     }),

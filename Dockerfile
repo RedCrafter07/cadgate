@@ -69,6 +69,6 @@ ENV DEV=false
 
 EXPOSE 80
 EXPOSE 443
-EXPOSE 3000
+EXPOSE 2080
 
 CMD [ "deno", "run", "-A", "/cadgate/start/src/index.ts" ]
