@@ -1,1 +1,7 @@
-docker run -v /var/run/docker.sock:/var/run/docker.sock --rm ghcr.io/redcrafter07/cadgate/installer:latest
+#!/bin/bash
+
+curl -LO https://github.com/RedCrafter07/cadgate/releases/latest/download/installer
+
+chmod +x installer
+
+./installer
