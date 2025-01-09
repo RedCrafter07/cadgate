@@ -14,14 +14,15 @@ Use the installer:
 curl -sSL https://cgi.r07.dev | bash
 ```
 
-_Please note that the image is not yet built. Please be patient!_
+_Please note that Cadgate is not meant to be used in a production environment yet._
 
 ## Planned features
 
 -   [x] Enforce HTTPS
 -   [x] CloudFlare integration
 -   [x] Installer (for setting env variables, etc.)
--   [ ] Very basic certificate management
+-   [x] Very basic certificate management (auto only)
+-   [ ] Developer documentation
 -   [ ] Load Balancing / Failover
 -   [ ] Emergency scripts
 -   [ ] Default routes
@@ -38,12 +39,53 @@ _Please note that the image is not yet built. Please be patient!_
 -   [ ] Importing existing Caddyfiles
 -   [ ] _SQLite as DB (optional)_
 -   [ ] _TCP Forwarding (optional)_
+-   [ ] _Plugin system (optional)_
+
+## Project structure
+
+The project's components are organized in the `packages/` directory:
+
+### [`api/`](packages/api/)
+
+The core backend service that:
+
+-   Manages the database
+-   Handles communication with Caddy
+-   Processes frontend requests
+
+### [`installer/`](packages/installer/)
+
+Installation utility that:
+
+-   simply generates a docker compose for deployment. It prints to console by default.
+
+### [`interface/`](packages/interface/)
+
+The frontend application that:
+
+-   Provides the user interface
+-   Manages user interactions
+
+### [`start/`](packages/start/)
+
+Startup component that:
+
+-   Manages initialization
+-   Handles system boot sequence
+
+### [`util/`](packages/util/)
+
+Shared utility library containing:
+
+-   Common functions
+-   Reusable components for API and startup
 
 ## Acknowledgements
 
 -   [Tabler Icons](https://tabler.io/icons) for the favicon & icons used in this project
 -   [SvelteKit](https://kit.svelte.dev) for the frontend framework
 -   [Deno](https://deno.land) for the runtime
+-   [Caddy](https://caddyserver.com/), the server in-use.
 
 ## License
 
