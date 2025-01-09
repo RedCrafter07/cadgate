@@ -16,6 +16,20 @@ curl -sSL https://cgi.r07.dev | bash
 
 _Please note that Cadgate is not meant to be used in a production environment yet._
 
+The installer has the following environment variables:
+
+-   `WRITE` (boolean)
+    -   Write the output to a file.
+-   `PORT` (number)
+    -   The port of the interface.
+-   `NAME` (string)
+    -   The name of the container.
+-   `IMAGE` (string)
+    -   The image to use instead of the default one.
+
+Write these variables before the `bash` for the script to work.
+The script initially downloads a cadgateInstaller binary to your system. You can also just execute it using ./cadgateInstaller after executing the installer script once. No files are written without explicitly setting the WRITE variable.
+
 ## Planned features
 
 -   [x] Enforce HTTPS
