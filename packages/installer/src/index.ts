@@ -1,189 +1,127 @@
-import axios, { AxiosResponse } from 'npm:axios';
 import chalk from 'npm:chalk';
-import { Buffer } from 'node:buffer';
+// @ts-types="npm:@types/figlet"
+import figlet from 'npm:figlet';
+// @ts-types="npm:@types/gradient-string"
+import gradient from 'npm:gradient-string';
 
+import * as yaml from 'jsr:@std/yaml';
+
+import path from 'node:path';
+
+const containerName = Deno.env.get('NAME') ?? 'cadgate';
 const image = Deno.env.get('IMAGE') ?? 'ghcr.io/redcrafter07/cadgate/cadgate';
-const skipPull = Boolean(Deno.env.get('SKIP_PULL') ?? 'false');
+const write = Boolean(Deno.env.get('WRITE'));
 const interfacePort = Number(Deno.env.get('PORT') ?? '2080');
 
-const docker = axios.create({
-    socketPath: '/var/run/docker.sock',
-    baseURL: '/v1.47',
+const ascii = figlet.textSync('CADGATE', {
+    font: '3-D',
 });
 
-console.log(chalk.blue('Generating JWT secret...'));
+title();
+
+console.log(
+    chalk.gray(`
+You can also use the following environment variables:
+
+WRITE (boolean)  ->   Write the output to a file.    
+PORT  (number)   ->   The port of the interface.
+NAME  (string)   ->   The name of the container.
+IMAGE  (string)  ->   The image to use instead of the default one.
+
+Please note that all of the listed variables are optional.`)
+);
+
+console.log('\n\n');
+
+const compose = generateDockerCompose();
+
+if (write) {
+    const composePath = path.resolve('./docker-compose.yml');
+
+    let file: Deno.FsFile | undefined;
+
+    try {
+        file = await Deno.open(composePath, {
+            createNew: true,
+            write: true,
+            read: true,
+        });
+    } catch {
+        file = undefined;
+    }
+
+    if (!file) {
+        console.log(
+            chalk.red(
+                `The file ${composePath} already exists and thus will not be overridden.`
+            )
+        );
+
+        Deno.exit(1);
+    }
+
+    await file.write(new TextEncoder().encode(compose));
+
+    console.log(chalk.green(`Successfully wrote file to ${composePath}.`));
+} else {
+    console.log(
+        chalk.blue('Here is a Docker Compose you can use to deploy Cadgate:')
+    );
+    console.log(compose);
+}
+
+console.log(chalk.gray('Feel free to customize this file to your liking!'));
+
+function title() {
+    console.log(gradient(['#ff3434', '#7c00ff'])(ascii));
+    console.log();
+    console.log(chalk.gray.italic('A RedCrafter07 Project'));
+}
+
+function generateDockerCompose() {
+    const ports = generatePorts([
+        [80, 80],
+        [443, 443],
+        [2080, interfacePort],
+    ]);
+
+    const env = getDefaultEnv(generateSecret(128));
+
+    const data = {
+        services: {
+            cadgate: {
+                container_name: containerName,
+                image: image,
+                expose: ports,
+                environment: env,
+                volumes: ['cadgate_data:/data'],
+            },
+        },
+    };
+
+    return addVolume(yaml.stringify(data));
+}
+
+function addVolume(input: string) {
+    return `${input}\nvolumes:\n  cadgate_data:`;
+}
+
+function getDefaultEnv(secret: string) {
+    return [
+        'CONFIG_PATH="/data/cadpm.yml"',
+        'DATABASE_PATH="/data/db.json"',
+        'INIT_FILES=true',
+        `JWT_SECRET="${secret.replaceAll('"', '\\"')}"`,
+    ];
+}
+
+function generatePorts(input: [number, number][]) {
+    // internal:external
+    return input.map(([i, e]) => `${i}:${e}`);
+}
 
 function generateSecret(length: number): string {
     return btoa(
         String.fromCharCode(...crypto.getRandomValues(new Uint8Array(length)))
     );
-}
-
-if (!skipPull) {
-    console.log(chalk.blue('Pulling image...'));
-
-    await pullDockerImage({
-        fromImage: image,
-    });
-}
-
-const jwtSecret = generateSecret(256);
-
-console.log(chalk.blue('Creating env variables...'));
-
-const envVars = createEnvVars({
-    jwtSecret,
-});
-
-console.log(chalk.blue('Creating volume...'));
-
-let volumeCreation: AxiosResponse<any, any>;
-
-try {
-    volumeCreation = await docker.post('/volumes/create', {
-        Name: 'cadgate_data',
-    });
-} catch {
-    console.log(
-        chalk.red(
-            '[CRITICAL]: Volume creation failed! Please remove all volumes with the name cadgate_data'
-        )
-    );
-    Deno.exit(1);
-}
-
-if (volumeCreation.status != 201) {
-    console.log(
-        chalk.red(
-            '[CRITICAL]: Volume creation failed! Please remove all volumes with the name cadgate_data.'
-        )
-    );
-    Deno.exit(1);
-}
-
-// internal:external
-const portBinds = {
-    3000: interfacePort,
-    80: 80,
-    443: 443,
-};
-
-const ports = genDockerPorts(portBinds);
-
-let containerCreation: AxiosResponse<any, any>;
-
-try {
-    containerCreation = await docker.post('/containers/create', {
-        Image: image,
-        Env: envVars,
-        HostConfig: {
-            Binds: ['cadgate_data:/data'],
-            PortBindings: ports,
-        },
-    });
-} catch {
-    console.log(chalk.red('[CRITICAL]: Container creation failed!'));
-    Deno.exit(1);
-}
-
-if (containerCreation.status != 201) {
-    console.log(
-        chalk.red(
-            '[CRITICAL]: Volume creation failed! Please remove all volumes with the name cadgate_data'
-        )
-    );
-    Deno.exit(1);
-}
-
-const containerID = containerCreation.data.Id;
-
-console.log(chalk.blue('Starting container...'));
-
-let startResponse: AxiosResponse<any, any> | undefined = undefined;
-
-try {
-    startResponse = await docker.post(`/containers/${containerID}/start`);
-} catch {
-    //
-}
-
-if (
-    startResponse &&
-    (startResponse.status === 404 || startResponse.status === 500)
-) {
-    console.log(
-        chalk.red(
-            'An error occured while starting the container: ',
-            startResponse.status
-        )
-    );
-
-    Deno.exit(1);
-}
-
-console.log(chalk.green('Cadgate has been started successfully. Bye!'));
-
-async function pullDockerImage(options: {
-    fromImage: string;
-    tag?: string;
-}): Promise<void> {
-    try {
-        const response = await docker.post('/images/create', null, {
-            params: {
-                fromImage: options.fromImage,
-                tag: options.tag || 'latest',
-            },
-            responseType: 'stream',
-        });
-
-        return new Promise((resolve, reject) => {
-            response.data.on('data', (chunk: Buffer) => {
-                const data = JSON.parse(chunk.toString());
-                console.log(data.status || data.progress);
-            });
-
-            response.data.on('end', () => resolve());
-            response.data.on('error', (error: Error) => reject(error));
-        });
-    } catch (error: any) {
-        throw new Error(`Failed to pull image: ${error.message}`);
-    }
-}
-
-function createEnvVars(config: {
-    jwtSecret: string;
-    initFiles?: boolean;
-    dbPath?: string;
-    configPath?: string;
-}) {
-    const confWithDefaults = {
-        initFiles: true,
-        dbPath: '/data/db.jsop',
-        configPath: '/data/config.yml',
-        ...config,
-    };
-
-    const envCase = {
-        INIT_FILES: confWithDefaults.initFiles,
-        DATABASE_PATH: confWithDefaults.dbPath,
-        CONFIG_PATH: confWithDefaults.configPath,
-        JWT_SECRET: confWithDefaults.jwtSecret,
-    };
-
-    return Object.entries(envCase).map(([k, v]) => `${k}=${v}`);
-}
-
-function genDockerPorts(input: Record<number, number>) {
-    return Object.entries(input)
-        .map(
-            ([k, v]) =>
-                [`${k}/tcp`, [{ HostPort: v.toString() }]] as [
-                    string,
-                    [{ HostPort: string }]
-                ]
-        )
-        .reduce((p, [k, v]) => {
-            p[k] = v;
-            return p;
-        }, {} as Record<string, [{ HostPort: string }]>);
 }

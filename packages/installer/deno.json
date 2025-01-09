@@ -1,1 +1,5 @@
-{}
+{
+    "tasks": {
+        "build": "deno compile -A -o=./installer src/index.ts"
+    }
+}
