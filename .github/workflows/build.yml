@@ -48,14 +48,12 @@ jobs:
           deno-version: v2.1.4
       - name: Checkout
         uses: actions/checkout@v4
-        with:
-          sparse-checkout: 'packages/installer'
-          sparse-checkout-cone-mode: false
       - name: Build installer
+        working-directory: packages/installer
         run: deno task build
       - name: Upload installer
         uses: actions/upload-artifact@v4
         with: 
           name: installer
-          path: ./installer
+          path: packages/installer/installer
 
