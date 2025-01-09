@@ -18,7 +18,7 @@
 curl -sSL https://cgi.r07.dev | bash
 ```
 
-The installer has the following environment variables:
+The installer supports the following environment variables:
 
 -   `WRITE` (boolean)
     -   Write the output to a file.
@@ -28,9 +28,12 @@ The installer has the following environment variables:
     -   The name of the container.
 -   `IMAGE` (string)
     -   The image to use instead of the default one.
+-   `X` (boolean)
+    -   Whether to execute the script.
 
-Write these variables before the `bash` for the script to work.
-The script initially downloads a cadgateInstaller binary to your system. You can also just execute it using ./cadgateInstaller after executing the installer script once. No files are written without explicitly setting the WRITE variable.
+**These variables are optional!**
+
+The script downloads the `cadgateInstaller` binary to your system. You can also just execute it using `./cadgateInstaller`, or directly provide X=true in front of the |.
 
 ## Planned features
 
