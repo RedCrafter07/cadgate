@@ -30,10 +30,18 @@ The installer supports the following environment variables:
     -   The image to use instead of the default one.
 -   `X` (boolean)
     -   Whether to execute the script.
+-   `CLEANUP` (boolean)
+    -   Whether to clean up after executing the script. Requires X to be true.
 
 **These variables are optional!**
 
 The script downloads the `cadgateInstaller` binary to your system. You can also just execute it using `./cadgateInstaller`, or directly provide X=true in front of the |.
+
+### Examples
+
+```bash
+curl -sSL https://cgi.r07.dev | X=true WRITE=true bash
+```
 
 ## Planned features
 

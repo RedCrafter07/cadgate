@@ -3,14 +3,12 @@ import chalk from 'npm:chalk';
 import figlet from 'npm:figlet';
 // @ts-types="npm:@types/gradient-string"
 import gradient from 'npm:gradient-string';
-
 import * as yaml from 'jsr:@std/yaml';
-
 import path from 'node:path';
 
 const containerName = Deno.env.get('NAME') ?? 'cadgate';
 const image = Deno.env.get('IMAGE') ?? 'ghcr.io/redcrafter07/cadgate/cadgate';
-const write = Boolean(Deno.env.get('WRITE'));
+const write = Deno.env.get('WRITE') === 'true';
 const interfacePort = Number(Deno.env.get('PORT') ?? '2080');
 
 const ascii = figlet.textSync('CADGATE', {
