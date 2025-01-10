@@ -59,4 +59,6 @@ EXPOSE 80
 EXPOSE 443
 EXPOSE 2080
 
+WORKDIR /cadgate/start
+
 CMD [ "deno", "run", "-A", "/cadgate/start/src/index.ts" ]
