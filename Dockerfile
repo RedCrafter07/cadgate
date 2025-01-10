@@ -1,55 +1,43 @@
 FROM debian:bookworm-slim AS base
 
-RUN apt update
-RUN apt upgrade
-RUN apt install -y curl unzip ufw
+# Install dependencies.
+# Installation instructions used for Caddy: https://caddyserver.com/docs/install#debian-ubuntu-raspbian
 
-# Install caddy, as per installation instructions: https://caddyserver.com/docs/install#debian-ubuntu-raspbian
-RUN apt install -y debian-keyring debian-archive-keyring apt-transport-https curl
-RUN curl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/gpg.key' | gpg --dearmor -o /usr/share/keyrings/caddy-stable-archive-keyring.gpg
-RUN curl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/debian.deb.txt' | tee /etc/apt/sources.list.d/caddy-stable.list
-RUN apt update
-RUN apt install caddy
-
-RUN curl -fsSL https://deb.nodesource.com/setup_lts.x | bash -
-
-RUN apt install -y nodejs
-
-RUN curl -fsSL https://deno.land/install.sh | sh && cp /root/.deno/bin/deno /usr/local/bin/deno
+RUN apt update && \
+	apt upgrade && \
+	apt install -y curl unzip && \
+    apt install -y debian-keyring debian-archive-keyring apt-transport-https curl && \
+    curl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/gpg.key' | gpg --dearmor -o /usr/share/keyrings/caddy-stable-archive-keyring.gpg && \
+    curl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/debian.deb.txt' | tee /etc/apt/sources.list.d/caddy-stable.list && \
+	curl -fsSL https://deb.nodesource.com/setup_lts.x | bash - && \
+	apt update && \
+	apt install -y nodejs caddy && \ 
+	curl -fsSL https://deno.land/install.sh | sh && cp /root/.deno/bin/deno /usr/local/bin/deno
 
 FROM base AS interface
 
 WORKDIR /interface
-
 COPY packages/interface . 
-
 RUN deno install --node-modules-dir --allow-scripts
-
 RUN deno task build
 
 FROM base AS api
 
 WORKDIR /api
-
 COPY packages/api . 
-
-RUN deno install --node-modules-dir
+RUN deno cache src/index.ts --node-modules-dir
 
 FROM base AS util
 
 WORKDIR /util
-
 COPY packages/util .
-
-RUN deno install --node-modules-dir
+RUN deno cache *.ts --node-modules-dir
 
 FROM base AS starter
 
 WORKDIR /starter
-
 COPY packages/start . 
-
-RUN deno install --node-modules-dir
+RUN deno cache src/index.ts --node-modules-dir
 
 FROM base AS final
 
