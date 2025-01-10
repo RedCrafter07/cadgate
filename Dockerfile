@@ -12,7 +12,8 @@ RUN apt update && \
 	curl -fsSL https://deb.nodesource.com/setup_lts.x | bash - && \
 	apt update && \
 	apt install -y nodejs caddy && \ 
-	curl -fsSL https://deno.land/install.sh | sh && cp /root/.deno/bin/deno /usr/local/bin/deno
+	curl -fsSL https://deno.land/install.sh | sh && cp /root/.deno/bin/deno /usr/local/bin/deno && \
+	mkdir -p /data && chown -R cadgate:cadgate /data
 
 FROM base AS interface
 
@@ -60,5 +61,7 @@ EXPOSE 443
 EXPOSE 2080
 
 WORKDIR /cadgate/start
+
+USER cadgate
 
 CMD [ "deno", "run", "-A", "/cadgate/start/src/index.ts" ]
