@@ -9,6 +9,7 @@ import { isProcessRunning } from './util/isProcessRunning.ts';
 import * as caddyAPI from '@/util/caddy.ts';
 import checkStatus from './util/waitForOnline.ts';
 import { Interval } from '@/util/interval.ts';
+import { envToBoolean } from './util/envToBoolean.ts';
 
 const logger = new Logger();
 
@@ -16,7 +17,7 @@ logger.log('======= Welcome to cadgate! =======');
 
 const CONFIG_PATH = Deno.env.get('CONFIG_PATH')!;
 const DATABASE_PATH = Deno.env.get('DATABASE_PATH')!;
-const INIT_FILES = Boolean(Deno.env.get('INIT_FILES'));
+const INIT_FILES = envToBoolean('INIT_FILES');
 const INTERFACE_PATH = Deno.env.get('INTERFACE_PATH')!;
 const DATA_PATH = Deno.env.get('DATA_PATH')!;
 const API_PATH = Deno.env.get('API_PATH')!;
@@ -24,8 +25,8 @@ const JWT_SECRET = Deno.env.get('JWT_SECRET')!;
 const DEFAULT_PASSWORD = Deno.env.get('DEFAULT_PASSWORD') ?? 'ch4ngem3';
 const BACKUP_CADDY_EVERY =
     Number(Deno.env.get('BACKUP_CADDY_EVERY')) || 1 * 60 * 1000;
-const DEV = (Deno.env.get('DEV') ?? 'false') === 'true';
-const STARTER_DEBUG = (Deno.env.get('STARTER_DEBUG') ?? 'false') === 'true';
+const DEV = envToBoolean('DEV');
+const STARTER_DEBUG = envToBoolean('STARTER_DEBUG');
 
 // TODO: Add env variables for enabling specific logs
 // const ENABLE_CADDY_LOGS = Boolean(Deno.env.get('ENABLE_CADDY_LOGS'));
@@ -124,20 +125,24 @@ logger.info('Checking config...');
 
 logger.indent().log(`Getting cached config file from ${CONFIG_PATH}...`);
 
-let content: string;
+let configContent: string;
+let configFile: Deno.FsFile;
 
 try {
-    const file = await Deno.open(CONFIG_PATH);
+    configFile = await Deno.open(CONFIG_PATH);
 
-    file.close();
-
-    content = await Deno.readTextFile(CONFIG_PATH);
+    configContent = await Deno.readTextFile(CONFIG_PATH);
 } catch {
     if (INIT_FILES) {
         const fileContent = YAML.stringify({ isSetUp: false });
-        await Deno.writeTextFile(CONFIG_PATH, fileContent);
 
-        content = fileContent;
+        configFile = await Deno.open(CONFIG_PATH, {
+            create: true,
+        });
+
+        await configFile.write(new TextEncoder().encode(fileContent));
+
+        configContent = fileContent;
     } else {
         logger.error('ERROR', 'Opening file failed. Does it exist?');
         logger
@@ -150,10 +155,10 @@ try {
     }
 }
 
-let jsonContent: unknown;
+let configAsJson: unknown;
 
 try {
-    jsonContent = YAML.parse(content);
+    configAsJson = YAML.parse(configContent);
 } catch {
     logger.error('CRITICAL', 'Could not parse config. Is it a YAML?');
 
@@ -162,7 +167,7 @@ try {
 
 logger.indent().log('Validating config...');
 
-const validation = configSchema.safeParse(jsonContent);
+const validation = configSchema.safeParse(configAsJson);
 
 if (!validation.success) {
     logger.error(
@@ -313,6 +318,8 @@ const configBackup = new Interval(BACKUP_CADDY_EVERY, async () => {
 
 const stopHandler = async () => {
     logger.warn('Exit detected!');
+
+    configFile.close();
 
     configBackup.stop();
 
