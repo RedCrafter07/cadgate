@@ -13,7 +13,11 @@ RUN apt update && \
 	apt update && \
 	apt install -y nodejs caddy && \ 
 	curl -fsSL https://deno.land/install.sh | sh && cp /root/.deno/bin/deno /usr/local/bin/deno && \
-	mkdir -p /data && chown -R cadgate:cadgate /data
+	groupadd -r cadgate && \
+    useradd -r -g cadgate cadgate && \
+    mkdir -p /data && \
+    chown -R cadgate:cadgate /data && \
+    chmod 755 /data
 
 FROM base AS interface
 
