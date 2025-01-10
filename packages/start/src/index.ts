@@ -129,7 +129,7 @@ const cmds = {
 
 logger.info('Checking config...');
 
-logger.indent().log(`Getting cached config file from ${CONFIG_PATH}...`);
+logger.indent().log(`Getting config file from ${CONFIG_PATH}...`);
 
 let configContent: string;
 let configFile: Deno.FsFile;
@@ -142,7 +142,9 @@ try {
     if (INIT_FILES) {
         const fileContent = YAML.stringify({ isSetUp: false });
 
-        await Deno.create(CONFIG_PATH);
+        await Deno.mkdir(new URL('.', CONFIG_PATH).pathname, {
+            recursive: true,
+        });
 
         configFile = await Deno.create(CONFIG_PATH);
 
