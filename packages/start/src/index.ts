@@ -142,11 +142,9 @@ try {
     if (INIT_FILES) {
         const fileContent = YAML.stringify({ isSetUp: false });
 
-        configFile = await Deno.open(CONFIG_PATH, {
-            create: true,
-            write: true,
-            read: true,
-        });
+        await Deno.create(CONFIG_PATH);
+
+        configFile = await Deno.create(CONFIG_PATH);
 
         await configFile.write(new TextEncoder().encode(fileContent));
 
