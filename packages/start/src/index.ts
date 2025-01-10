@@ -28,6 +28,12 @@ const BACKUP_CADDY_EVERY =
 const DEV = envToBoolean('DEV');
 const STARTER_DEBUG = envToBoolean('STARTER_DEBUG');
 
+try {
+    await Deno.mkdir('/data', { recursive: true });
+} catch {
+    // Seems to already exist, do nothing
+}
+
 // TODO: Add env variables for enabling specific logs
 // const ENABLE_CADDY_LOGS = Boolean(Deno.env.get('ENABLE_CADDY_LOGS'));
 
