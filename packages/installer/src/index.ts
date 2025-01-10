@@ -7,7 +7,7 @@ import * as yaml from 'jsr:@std/yaml';
 import path from 'node:path';
 
 const containerName = Deno.env.get('NAME') ?? 'cadgate';
-const image = Deno.env.get('IMAGE') ?? 'ghcr.io/redcrafter07/cadgate/cadgate';
+const image = Deno.env.get('IMAGE') ?? 'ghcr.io/redcrafter07/cadgate';
 const write = Deno.env.get('WRITE') === 'true';
 const interfacePort = Number(Deno.env.get('PORT') ?? '2080');
 
