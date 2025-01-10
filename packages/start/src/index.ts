@@ -144,6 +144,8 @@ try {
 
         configFile = await Deno.open(CONFIG_PATH, {
             create: true,
+            write: true,
+            read: true,
         });
 
         await configFile.write(new TextEncoder().encode(fileContent));
