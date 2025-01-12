@@ -71,4 +71,4 @@ USER cadgate
 HEALTHCHECK --interval=30s --timeout=3s \
     CMD curl -f http://localhost:2080/ || exit 1
 
-CMD [ "deno", "run", "-A", "/cadgate/start/src/index.ts" ]
+CMD [ "deno", "run", "-A", "src/index.ts" ]
