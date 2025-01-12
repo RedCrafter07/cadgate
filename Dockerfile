@@ -3,8 +3,7 @@ FROM debian:bookworm-slim AS base
 # Install dependencies.
 # Installation instructions used for Caddy: https://caddyserver.com/docs/install#debian-ubuntu-raspbian
 
-WORKDIR /cadgate
-ENV DENO_DIR=./.deno_cache
+ENV DENO_DIR=/cadgate/.deno_cache
 
 RUN apt update && \
 	apt upgrade && \
